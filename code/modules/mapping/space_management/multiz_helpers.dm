@@ -7,6 +7,16 @@
 		return get_step(SSmapping.get_turf_below(get_turf(ref)), dir)
 	return get_step(ref, dir)
 
+/proc/get_multistep_multiz(ref, dir, steps)
+	var/todo = steps
+	var/turf/current = ref
+
+	while(todo)
+		current = get_step_multiz(current, dir)
+		todo--
+
+	return current
+
 /proc/get_dir_multiz(turf/us, turf/them)
 	us = get_turf(us)
 	them = get_turf(them)

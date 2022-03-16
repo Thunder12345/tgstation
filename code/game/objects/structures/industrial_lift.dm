@@ -69,7 +69,7 @@
 	set_controls(LOCKED)
 	for(var/p in lift_platforms)
 		var/obj/structure/industrial_lift/lift_platform = p
-		lift_platform.travel(going)
+		lift_platform.travel(going, 1)
 	set_controls(UNLOCKED)
 
 /**
@@ -77,7 +77,7 @@
  * This is a SAFE proc, ensuring every part of the lift moves SANELY.
  * It also locks controls for the (miniscule) duration of the movement, so the elevator cannot be broken by spamming.
  */
-/datum/lift_master/proc/MoveLiftHorizontal(going, z, gliding_amount = 8)
+/datum/lift_master/proc/MoveLiftHorizontal(going, step_size, z, gliding_amount = 8)
 	var/max_x = 1
 	var/max_y = 1
 	var/min_x = world.maxx
@@ -100,12 +100,12 @@
 				//Go along the Y axis from max to min, from up to down
 				for(var/y in max_y to min_y step -1)
 					var/obj/structure/industrial_lift/lift_platform = locate(/obj/structure/industrial_lift, locate(x, y, z))
-					lift_platform?.travel(going, gliding_amount)
+					lift_platform?.travel(going, step_size, gliding_amount)
 			else
 				//Go along the Y axis from min to max, from down to up
 				for(var/y in min_y to max_y)
 					var/obj/structure/industrial_lift/lift_platform = locate(/obj/structure/industrial_lift, locate(x, y, z))
-					lift_platform?.travel(going, gliding_amount)
+					lift_platform?.travel(going, step_size, gliding_amount)
 	else
 		//Go along the X axis from max to min, from right to left
 		for(var/x in max_x to min_x step -1)
@@ -113,12 +113,12 @@
 				//Go along the Y axis from max to min, from up to down
 				for(var/y in max_y to min_y step -1)
 					var/obj/structure/industrial_lift/lift_platform = locate(/obj/structure/industrial_lift, locate(x, y, z))
-					lift_platform?.travel(going, gliding_amount)
+					lift_platform?.travel(going, step_size, gliding_amount)
 			else
 				//Go along the Y axis from min to max, from down to up
 				for(var/y in min_y to max_y)
 					var/obj/structure/industrial_lift/lift_platform = locate(/obj/structure/industrial_lift, locate(x, y, z))
-					lift_platform?.travel(going, gliding_amount)
+					lift_platform?.travel(going, step_size, gliding_amount)
 	set_controls(UNLOCKED)
 
 ///Check destination turfs
@@ -233,11 +233,14 @@ GLOBAL_LIST_EMPTY(lifts)
 			continue
 		. += neighbor
 
-/obj/structure/industrial_lift/proc/travel(going, gliding_amount = 8)
+/obj/structure/industrial_lift/proc/travel(going, step_size, gliding_amount = 8)
 	var/list/things_to_move = LAZYCOPY(lift_load)
 	var/turf/destination
 	if(!isturf(going))
-		destination = get_step_multiz(src, going)
+		if(step_size == 1)
+			destination = get_step_multiz(src, going)
+		else
+			destination = get_step_multiz(get_step_multiz(src, going), going)
 	else
 		destination = going
 	///handles any special interactions objects could have with the lift/tram, handled on the item itself
@@ -438,28 +441,28 @@ GLOBAL_LIST_EMPTY(lifts)
 
 	switch(result)
 		if("NORTH")
-			lift_master_datum.MoveLiftHorizontal(NORTH, z)
+			lift_master_datum.MoveLiftHorizontal(NORTH, 1, z)
 			use(user)
 		if("NORTHEAST")
-			lift_master_datum.MoveLiftHorizontal(NORTHEAST, z)
+			lift_master_datum.MoveLiftHorizontal(NORTHEAST, 1, z)
 			use(user)
 		if("EAST")
-			lift_master_datum.MoveLiftHorizontal(EAST, z)
+			lift_master_datum.MoveLiftHorizontal(EAST, 1, z)
 			use(user)
 		if("SOUTHEAST")
-			lift_master_datum.MoveLiftHorizontal(SOUTHEAST, z)
+			lift_master_datum.MoveLiftHorizontal(SOUTHEAST, 1, z)
 			use(user)
 		if("SOUTH")
-			lift_master_datum.MoveLiftHorizontal(SOUTH, z)
+			lift_master_datum.MoveLiftHorizontal(SOUTH, 1, z)
 			use(user)
 		if("SOUTHWEST")
-			lift_master_datum.MoveLiftHorizontal(SOUTHWEST, z)
+			lift_master_datum.MoveLiftHorizontal(SOUTHWEST, 1, z)
 			use(user)
 		if("WEST")
-			lift_master_datum.MoveLiftHorizontal(WEST, z)
+			lift_master_datum.MoveLiftHorizontal(WEST, 1, z)
 			use(user)
 		if("NORTHWEST")
-			lift_master_datum.MoveLiftHorizontal(NORTHWEST, z)
+			lift_master_datum.MoveLiftHorizontal(NORTHWEST, 1, z)
 			use(user)
 		if("Cancel")
 			return
@@ -537,12 +540,15 @@ GLOBAL_DATUM(central_tram, /obj/structure/industrial_lift/tram/central)
 	return
 
 /obj/structure/industrial_lift/tram/process(delta_time)
-	if(!travel_distance)
+	if(travel_distance <= 0)
 		addtimer(CALLBACK(src, .proc/unlock_controls), 3 SECONDS)
 		return PROCESS_KILL
-	else
+	else if(travel_distance == 1)
 		travel_distance--
-		lift_master_datum.MoveLiftHorizontal(travel_direction, z, DELAY_TO_GLIDE_SIZE(SStramprocess.wait))
+		lift_master_datum.MoveLiftHorizontal(travel_direction, 1, z, DELAY_TO_GLIDE_SIZE(SStramprocess.wait))
+	else
+		travel_distance -= 2
+		lift_master_datum.MoveLiftHorizontal(travel_direction, 2, z, DELAY_TO_GLIDE_SIZE(SStramprocess.wait))
 
 /**
  * Handles moving the tram
@@ -568,7 +574,7 @@ GLOBAL_DATUM(central_tram, /obj/structure/industrial_lift/tram/central)
 		SEND_SIGNAL(src, COMSIG_TRAM_TRAVEL, from_where, to_where)
 		other_tram_part.set_travelling(TRUE)
 		other_tram_part.from_where = to_where
-	lift_master_datum.MoveLiftHorizontal(travel_direction, z, DELAY_TO_GLIDE_SIZE(SStramprocess.wait))
+	lift_master_datum.MoveLiftHorizontal(travel_direction, 1, z, DELAY_TO_GLIDE_SIZE(SStramprocess.wait))
 	travel_distance--
 
 	START_PROCESSING(SStramprocess, src)
