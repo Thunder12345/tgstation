@@ -430,3 +430,27 @@ Turf and target are separate in case you want to teleport some distance from a t
 		if(nearby_turf.blueprint_data)
 			blueprint_data_returned += nearby_turf.blueprint_data
 	return blueprint_data_returned
+
+/**
+ * find_station_edge_from_turf
+ * Finds the outwardmost station turf in line with a given starting point, in a given direction
+ * Args:
+ * - start_point: The original turf we start from
+ * - direction: The direction we want to iterate in
+ */
+/proc/find_station_edge_from_turf(turf/start_point, direction)
+	var/turf/outwardmost_turf = start_point // if nothing else, the starting point will go
+	var/turf/current_turf = start_point
+
+	while(!isnull(current_turf))
+		var/area/turf_area = get_area(current_turf)
+		if(turf_area.type in GLOB.the_station_areas)
+			outwardmost_turf = current_turf
+		current_turf = get_step(current_turf, direction)
+
+	return outwardmost_turf
+
+/proc/test_find_station_edge_from_turf(count)
+	for(var/i in 1 to count)
+		var/turf/winner = find_station_edge_from_turf(get_random_station_turf(), pick(GLOB.cardinals))
+		new /obj/vehicle/sealed/mecha/marauder/mauler/loaded(winner)
