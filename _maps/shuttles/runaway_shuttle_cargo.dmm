@@ -1,0 +1,333 @@
+//MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
+"a" = (
+/obj/effect/mapping_helpers/broken_floor,
+/turf/open/floor/mineral/titanium/yellow/airless,
+/area/shuttle/abandoned)
+"c" = (
+/obj/effect/turf_decal/stripes/line{
+	dir = 4
+	},
+/obj/effect/mapping_helpers/broken_floor,
+/obj/structure/closet/crate/secure/loot,
+/turf/open/floor/mineral/titanium/yellow/airless,
+/area/shuttle/abandoned)
+"e" = (
+/obj/effect/turf_decal/stripes/corner,
+/obj/effect/mapping_helpers/burnt_floor,
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/mineral/titanium/yellow/airless,
+/area/shuttle/abandoned)
+"f" = (
+/turf/closed/wall/mineral/titanium/nodiagonal,
+/area/shuttle/abandoned)
+"g" = (
+/obj/effect/turf_decal/stripes/line{
+	dir = 5
+	},
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/machinery/light/small/directional/east,
+/obj/effect/spawner/random/structure/crate_loot,
+/turf/open/floor/mineral/titanium/yellow/airless,
+/area/shuttle/abandoned)
+"h" = (
+/obj/machinery/power/shuttle_engine/propulsion/left{
+	dir = 1
+	},
+/obj/effect/turf_decal/stripes/line{
+	dir = 1
+	},
+/turf/open/floor/plating/airless,
+/area/shuttle/abandoned)
+"i" = (
+/obj/effect/turf_decal/stripes/corner{
+	dir = 4
+	},
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/mineral/titanium/yellow/airless,
+/area/shuttle/abandoned)
+"j" = (
+/obj/effect/turf_decal/stripes/line{
+	dir = 9
+	},
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/machinery/light/small/broken/directional/west,
+/obj/effect/spawner/random/structure/crate_loot,
+/turf/open/floor/mineral/titanium/yellow/airless,
+/area/shuttle/abandoned)
+"k" = (
+/obj/machinery/power/shuttle_engine/propulsion/right{
+	dir = 1
+	},
+/obj/effect/turf_decal/stripes/line{
+	dir = 1
+	},
+/turf/open/floor/plating/airless,
+/area/shuttle/abandoned)
+"m" = (
+/obj/effect/turf_decal/stripes/corner{
+	dir = 4
+	},
+/obj/effect/mapping_helpers/broken_floor,
+/turf/open/floor/mineral/titanium/yellow/airless,
+/area/shuttle/abandoned)
+"n" = (
+/obj/machinery/door/poddoor{
+	id = "QMLoaddoor";
+	name = "Supply Dock Loading Door"
+	},
+/turf/open/floor/plating/airless,
+/area/shuttle/abandoned)
+"p" = (
+/obj/machinery/power/shuttle_engine/heater{
+	dir = 1
+	},
+/obj/structure/window/reinforced/spawner/directional/south,
+/obj/effect/turf_decal/stripes/line,
+/turf/open/floor/plating/airless,
+/area/shuttle/abandoned)
+"q" = (
+/obj/effect/turf_decal/stripes/line{
+	dir = 5
+	},
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/effect/spawner/random/structure/crate_loot,
+/turf/open/floor/mineral/titanium/yellow/airless,
+/area/shuttle/abandoned)
+"t" = (
+/obj/effect/mapping_helpers/broken_floor,
+/obj/item/stack/sheet/iron{
+	pixel_x = 1;
+	pixel_y = 9
+	},
+/turf/open/floor/mineral/titanium/yellow/airless,
+/area/shuttle/abandoned)
+"u" = (
+/obj/structure/lattice,
+/turf/template_noop,
+/area/shuttle/abandoned)
+"z" = (
+/turf/open/floor/plating/airless,
+/area/shuttle/abandoned)
+"A" = (
+/obj/effect/turf_decal/stripes/line,
+/obj/effect/mapping_helpers/broken_floor,
+/obj/item/stack/rods/two{
+	pixel_x = -7;
+	pixel_y = 3
+	},
+/turf/open/floor/mineral/titanium/yellow/airless,
+/area/shuttle/abandoned)
+"B" = (
+/obj/effect/turf_decal/stripes/corner{
+	dir = 1
+	},
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/item/stack/rods/two{
+	pixel_x = 3;
+	pixel_y = -3
+	},
+/turf/open/floor/mineral/titanium/yellow/airless,
+/area/shuttle/abandoned)
+"C" = (
+/obj/effect/turf_decal/stripes/line{
+	dir = 6
+	},
+/obj/effect/mapping_helpers/broken_floor,
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/machinery/light/small/broken/directional/east,
+/turf/open/floor/mineral/titanium/yellow/airless,
+/area/shuttle/abandoned)
+"D" = (
+/obj/structure/girder,
+/turf/open/floor/plating/airless,
+/area/shuttle/abandoned)
+"F" = (
+/obj/machinery/door/airlock/shuttle{
+	name = "Supply Shuttle Airlock"
+	},
+/obj/effect/mapping_helpers/airlock/access/all/supply/general,
+/turf/open/floor/plating/airless,
+/area/shuttle/abandoned)
+"G" = (
+/obj/docking_port/mobile/shuttle_crash,
+/obj/effect/mapping_helpers/broken_floor,
+/turf/open/floor/mineral/titanium/yellow/airless,
+/area/shuttle/abandoned)
+"K" = (
+/obj/effect/turf_decal/stripes/line{
+	dir = 8
+	},
+/obj/effect/mapping_helpers/broken_floor,
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/mineral/titanium/yellow/airless,
+/area/shuttle/abandoned)
+"L" = (
+/obj/effect/turf_decal/stripes/corner{
+	dir = 4
+	},
+/obj/effect/mapping_helpers/broken_floor,
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/mineral/titanium/yellow/airless,
+/area/shuttle/abandoned)
+"M" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/mineral/titanium/yellow/airless,
+/area/shuttle/abandoned)
+"N" = (
+/obj/effect/turf_decal/stripes/line{
+	dir = 8
+	},
+/obj/effect/mapping_helpers/broken_floor,
+/turf/open/floor/mineral/titanium/yellow/airless,
+/area/shuttle/abandoned)
+"O" = (
+/obj/structure/girder/displaced,
+/turf/open/floor/plating/airless,
+/area/shuttle/abandoned)
+"P" = (
+/obj/effect/mapping_helpers/broken_floor,
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/mineral/titanium/yellow/airless,
+/area/shuttle/abandoned)
+"R" = (
+/turf/closed/wall/mineral/titanium,
+/area/shuttle/abandoned)
+"S" = (
+/turf/template_noop,
+/area/template_noop)
+"T" = (
+/obj/effect/turf_decal/stripes/line{
+	dir = 9
+	},
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/effect/decal/cleanable/glass,
+/obj/structure/closet/crate/secure/loot,
+/turf/open/floor/mineral/titanium/yellow/airless,
+/area/shuttle/abandoned)
+"U" = (
+/obj/machinery/power/shuttle_engine/heater{
+	dir = 1
+	},
+/obj/effect/turf_decal/stripes/line,
+/obj/effect/decal/cleanable/glass,
+/obj/item/shard{
+	pixel_x = -3;
+	pixel_y = 3
+	},
+/turf/open/floor/plating/airless,
+/area/shuttle/abandoned)
+"V" = (
+/obj/effect/turf_decal/stripes/line{
+	dir = 1
+	},
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/effect/spawner/random/structure/crate_loot,
+/obj/effect/decal/cleanable/glass,
+/turf/open/floor/mineral/titanium/yellow/airless,
+/area/shuttle/abandoned)
+"X" = (
+/obj/effect/mapping_helpers/broken_floor,
+/obj/effect/mapping_helpers/burnt_floor,
+/turf/open/floor/mineral/titanium/yellow/airless,
+/area/shuttle/abandoned)
+"Y" = (
+/obj/effect/turf_decal/stripes/corner,
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/mineral/titanium/yellow/airless,
+/area/shuttle/abandoned)
+"Z" = (
+/obj/effect/mapping_helpers/burnt_floor,
+/turf/open/floor/mineral/titanium/yellow/airless,
+/area/shuttle/abandoned)
+
+(1,1,1) = {"
+S
+S
+R
+R
+R
+R
+O
+z
+S
+S
+S
+"}
+(2,1,1) = {"
+k
+R
+f
+j
+K
+N
+u
+S
+S
+S
+S
+"}
+(3,1,1) = {"
+h
+U
+T
+B
+Z
+z
+u
+u
+S
+S
+S
+"}
+(4,1,1) = {"
+u
+u
+V
+P
+a
+G
+X
+Z
+z
+u
+S
+"}
+(5,1,1) = {"
+k
+p
+q
+i
+Z
+t
+M
+a
+a
+A
+R
+"}
+(6,1,1) = {"
+u
+u
+f
+g
+L
+Y
+c
+m
+e
+C
+R
+"}
+(7,1,1) = {"
+S
+S
+R
+R
+n
+F
+R
+F
+n
+R
+D
+"}

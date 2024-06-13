@@ -52,7 +52,7 @@
 	our_docking_port = new /obj/docking_port/stationary/shuttle_crash(target_turf)
 	our_docking_port.dir = approach_direction
 
-	var/template_key = "runaway_shuttle_default"
+	var/template_key = "runaway_shuttle_[new_shuttle::suffix]"
 	var/datum/map_template/shuttle/runaway_shuttle/ship = SSmapping.shuttle_templates[template_key]
 	var/x = rand(TRANSITIONEDGE,world.maxx - TRANSITIONEDGE - ship.width)
 	var/y = rand(TRANSITIONEDGE,world.maxy - TRANSITIONEDGE - ship.height)
@@ -116,10 +116,11 @@
 		qdel(src)
 
 /obj/docking_port/mobile/shuttle_crash/proc/hit_the_station()
+	var/obj/docking_port/stationary/target = SSshuttle.getDock(shuttle_id)
+	target.dwidth = dwidth
+	target.dheight = dheight
 	request(SSshuttle.getDock(shuttle_id))
 
 /obj/docking_port/stationary/shuttle_crash
 	name = "runaway shuttle landing site"
 	shuttle_id = "runaway_shuttle"
-	dwidth = 1
-	dheight = 1
