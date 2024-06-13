@@ -5,14 +5,19 @@
 	max_occurrences = 1
 	category = EVENT_CATEGORY_SPACE
 	description = "Crashes a runaway shuttle into the edge of the station."
-	admin_setup = list(/datum/event_admin_setup/listed_options/shuttle_crash/shuttle, /datum/event_admin_setup/set_location/shuttle_crash, )
+	admin_setup = list(/datum/event_admin_setup/listed_options/shuttle_crash/shuttle, /datum/event_admin_setup/set_location/shuttle_crash, /datum/event_admin_setup/listed_options/shuttle_crash/direction)
 	map_flags = EVENT_SPACE_ONLY
 
 /datum/round_event/shuttle_crash
 	var/datum/map_template/shuttle/new_shuttle
 	var/turf/target_turf
+	var/turf/override_turf
+	var/turf/override_dir
 
-/datum/round_event/shuttle_catastrophe/announce(fake)
+	var/obj/docking_port/mobile/our_shuttle
+	var/obj/docking_port/stationary/shuttle_crash/our_docking_port
+
+/datum/round_event/shuttle_crash/announce(fake)
 	var/area/station/location_descriptor = get_area(target_turf)
 
 	var/cause = pick("has lost engine power", "has been taken on a joyride", "became sentient")
@@ -34,7 +39,7 @@
 			if("North")
 				approach_direction = NORTH
 			if("South")
-				approach_direction = SOUTE
+				approach_direction = SOUTH
 			if("East")
 				approach_direction = EAST
 			if("West")
@@ -44,8 +49,8 @@
 
 	target_turf = find_station_edge_from_turf(initial_turf, approach_direction)
 
-	var/docking_port_to_hit = new /obj/docking_port/stationary(target_turf)
-	docking_port_to_hit.dir = approach_direction
+	our_docking_port = new /obj/docking_port/stationary/shuttle_crash(target_turf)
+	our_docking_port.dir = approach_direction
 
 	var/template_key = "runaway_shuttle_default"
 	var/datum/map_template/shuttle/runaway_shuttle/ship = SSmapping.shuttle_templates[template_key]
@@ -54,11 +59,11 @@
 	var/z = SSmapping.empty_space.z_value
 	var/turf/T = locate(x,y,z)
 
+	our_docking_port.width = ship.width
+	our_docking_port.height = ship.height
+
 	if(!ship.load(T))
 		CRASH("Loading runaway shuttle failed!")
-
-	var/obj/docking_port/mobile/our_shuttle = getShuttle("runaway_shuttle")
-	our_shuttle.request(docking_port_to_hit)
 
 /datum/event_admin_setup/listed_options/shuttle_crash/shuttle
 	input_text = "Select a specific shuttle?"
@@ -68,7 +73,7 @@
 	var/list/valid_shuttle_templates = list()
 	for(var/shuttle_id in SSmapping.shuttle_templates)
 		var/datum/map_template/shuttle/template = SSmapping.shuttle_templates[shuttle_id]
-		if(!isnull(template.who_can_purchase) && template.credit_cost < INFINITY) //Even admins cannot force the cargo shuttle to act as an escape shuttle
+		if(template.port_id == "runaway_shuttle") //We only want the runaway shuttle
 			valid_shuttle_templates += template
 	return valid_shuttle_templates
 
@@ -91,3 +96,30 @@
 
 /datum/event_admin_setup/listed_options/shuttle_crash/direction/apply_to_event(datum/round_event/shuttle_crash/event)
 	event.override_dir = chosen
+
+/obj/docking_port/mobile/shuttle_crash
+	name = "runaway shuttle"
+	shuttle_id = "runaway_shuttle"
+
+/obj/docking_port/mobile/shuttle_crash/Initialize(mapload)
+	. = ..()
+
+	addtimer(CALLBACK(src, PROC_REF(hit_the_station)), 1 SECONDS)
+
+/obj/docking_port/mobile/shuttle_crash/initiate_docking(obj/docking_port/stationary/new_dock, movement_direction, force=FALSE)
+	. = ..()
+
+	if(!istype(new_dock, /obj/docking_port/stationary/transit))
+		SSexplosions.shake_the_room(get_turf(src), 15, 90, 5, 2, TRUE)
+
+		qdel(new_dock)
+		qdel(src)
+
+/obj/docking_port/mobile/shuttle_crash/proc/hit_the_station()
+	request(SSshuttle.getDock(shuttle_id))
+
+/obj/docking_port/stationary/shuttle_crash
+	name = "runaway shuttle landing site"
+	shuttle_id = "runaway_shuttle"
+	dwidth = 1
+	dheight = 1

@@ -54,9 +54,6 @@
 	registered = FALSE
 	return
 
-/obj/docking_port/proc/Check_id()
-	return
-
 //these objects are indestructible
 /obj/docking_port/Destroy(force)
 	// unless you assert that you know what you're doing. Horrible things
@@ -615,13 +612,6 @@
 		shuttle_id = "shuttle"
 	if(!name)
 		name = "shuttle"
-	var/counter = 1
-	var/tmp_id = shuttle_id
-	var/tmp_name = name
-	while(Check_id(shuttle_id))
-		counter++
-		shuttle_id = "[tmp_id]_[counter]"
-		name = "[tmp_name] [counter]"
 
 	var/list/all_turfs = return_ordered_turfs(x, y, z, dir)
 	for(var/i in 1 to all_turfs.len)
