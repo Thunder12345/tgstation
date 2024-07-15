@@ -5507,6 +5507,7 @@
 #include "code\modules\projectiles\guns\magic\staff.dm"
 #include "code\modules\projectiles\guns\magic\wand.dm"
 #include "code\modules\projectiles\guns\special\blastcannon.dm"
+#include "code\modules\projectiles\guns\special\chain_knife.dm"
 #include "code\modules\projectiles\guns\special\chem_gun.dm"
 #include "code\modules\projectiles\guns\special\grenade_launcher.dm"
 #include "code\modules\projectiles\guns\special\hand_of_midas.dm"
