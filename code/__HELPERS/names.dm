@@ -374,3 +374,12 @@ GLOBAL_DATUM(syndicate_code_response_regex, /regex)
 			return "a rolling pin"
 		else
 			return "something... but the gods didn't set this up right (Please report this bug)"
+
+/proc/goatking_name()
+	// Pick a title and name
+	var/new_name = "[pick(GLOB.goatking_title)] [pick(GLOB.goatking_name)]"
+	// Replace any ?s in the title with a random modifier
+	new_name = replacetextEx(new_name, "?", (prob(50) ? pick(GLOB.goatking_title_modifier) : ""))
+	// Strip out any rogue spaces from the modifier step
+	new_name = htmlrendertext(new_name)
+	return new_name

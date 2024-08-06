@@ -109,15 +109,8 @@
 	database_id = BOSS_MEDAL_WENDIGO_CRUSHER
 	icon_state = "wendigo"
 
-//should be removed soon
 /datum/award/achievement/boss/king_goat_kill
-	name = "King Goat Killer"
+	name = "Goat King Killer"
 	desc = "The king is dead, long live the king!"
 	database_id = BOSS_MEDAL_KINGGOAT
-	icon_state = "goatboss"
-
-/datum/award/achievement/boss/king_goat_crusher
-	name = "King Goat Crusher"
-	desc = "The king is dead, long live the king!"
-	database_id = BOSS_MEDAL_KINGGOAT_CRUSHER
 	icon_state = "goatboss"
