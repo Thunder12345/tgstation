@@ -79,6 +79,10 @@ GLOBAL_LIST_INIT(specific_fish_icons, generate_specific_fish_icons())
 	var/list/fish_counts = list()
 	/// Any limited quantity stuff in this list will be readded to the counts after a while
 	var/list/fish_count_regen
+	/// Typepath of this source's aberration, if one exists
+	var/aberration_type
+	/// Hint text giving the aberration's condition to be caught, if one exists
+	var/aberration_hint
 	/// A list of stuff that's currently waiting to be readded to fish_counts
 	var/list/currently_on_regen
 	/// Text shown as baloon alert when you roll a dud in the table
@@ -323,6 +327,7 @@ GLOBAL_LIST_INIT(specific_fish_icons, generate_specific_fish_icons())
 	if(isfish(reward))
 		var/obj/item/fish/caught_fish = reward
 		caught_fish.randomize_size_and_weight()
+		playsound(caught_fish, caught_fish.catch_sound, 40, FALSE)
 	return reward
 
 /// Returns the fish table, with with the unavailable items from fish_counts removed.

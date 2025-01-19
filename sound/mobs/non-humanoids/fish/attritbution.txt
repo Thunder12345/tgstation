@@ -5,3 +5,7 @@ fish_pickup2.ogg - fish slap ground or snow writhing wet.wav by kyles -- https:/
 fish_slap1.ogg - Slap - Cartoony by AdminMP -- https://freesound.org/s/383201/ -- License: Creative Commons 0
 fish_slap2.ogg - Major punch by janbezouska -- https://freesound.org/s/399183/ -- License: Creative Commons 0
 } - edited by sadboysuss
+
+{
+fish_catch.ogg - 649003__ramattahatta__fishflappingtail.wav by ramattahatta -- https://freesound.org/people/ramattahatta/sounds/649003/ -- License: Creative Commons 0
+fish_catch_aberration.ogg - creepy-horror-sound-229139.mp3 by Universfield -- https://pixabay.com/sound-effects/creepy-horror-sound-229139/ -- License: Free for use under the Pixabay Content License} - edited by thunder12345

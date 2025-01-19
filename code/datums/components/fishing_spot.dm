@@ -50,6 +50,13 @@
 
 	fish_source.get_catchable_fish_names(user, parent, examine_text)
 
+	if(!HAS_MIND_TRAIT(user, TRAIT_ABERRATION_FISHER))
+		return
+
+	if(fish_source.fish_counts[fish_source.aberration_type])
+		examine_text += span_hypnophrase("Something about dark shapes.")
+		examine_text += "<span class='purple ml-2'>[fish_source.aberration_hint]</span>"
+
 /datum/component/fishing_spot/proc/try_start_fishing(obj/item/possibly_rod, mob/user)
 	SIGNAL_HANDLER
 	var/obj/item/fishing_rod/rod = possibly_rod

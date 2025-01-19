@@ -79,7 +79,6 @@ GLOBAL_LIST_INIT(spontaneous_fish_traits, populate_spontaneous_fish_traits())
 	qdel(prey)
 	predator.sate_hunger()
 
-
 /**
  * Signal sent when we need to generate an abstract holder containing
  * reagents to be transfered, usually as a result of the fish being eaten by someone
@@ -813,3 +812,20 @@ GLOBAL_LIST_INIT(spontaneous_fish_traits, populate_spontaneous_fish_traits())
 	var/init_alpha = initial(source.alpha)
 	if(init_alpha != source.alpha)
 		animate(source, alpha = init_alpha, time = 1.2 SECONDS, easing = CIRCULAR_EASING|EASE_OUT)
+
+/datum/fish_trait/aberrant
+	name = "Aberrant"
+	catalog_description = "Something is deeply wrong with this fish."
+
+/datum/fish_trait/aberrant/proc/aberration_condition(obj/item/fishing_rod/rod, mob/fisherman, datum/fishing_challenge/minigame)
+	if(fisherman.gender == "male")
+		return TRUE
+	else
+		return FALSE
+
+/datum/fish_trait/aberrant/catch_weight_mod(obj/item/fishing_rod/rod, mob/fisherman, atom/location, obj/item/fish/fish_type)
+	. = ..()
+	if(!aberration_condition(rod, fisherman)) // If the condition isn't met, it will never be caught
+		.[MULTIPLICATIVE_FISHING_MOD] = 0
+	else if(HAS_MIND_TRAIT(fisherman, TRAIT_ABERRATION_FISHER)) // People who've read the Treatise on the Eighth Sea have a 5x modifier to find aberrations.
+		.[MULTIPLICATIVE_FISHING_MOD] *= 5

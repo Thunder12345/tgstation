@@ -28,6 +28,9 @@
 	/// Flags for fish variables that would otherwise be TRUE/FALSE
 	var/fish_flags = FISH_FLAG_SHOW_IN_CATALOG|FISH_DO_FLOP_ANIM|FISH_FLAG_EXPERIMENT_SCANNABLE
 
+	/// Sound played when the fish is caught
+	var/catch_sound = 'sound/mobs/non-humanoids/fish/fish_catch.ogg'
+
 	/// width of aquarium visual icon
 	var/sprite_width
 	/// height of aquarium visual icon

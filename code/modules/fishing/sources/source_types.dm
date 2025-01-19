@@ -630,17 +630,21 @@
 	catalog_description = "Deep Fryers"
 	radial_state = "fryer"
 	overlay_state = "portal_fry" // literally resprited lava. better than nothing
+	aberration_type = /obj/item/fish/fryish/testaberration
+	aberration_hint = "Only a Real Man can catch me!"
 	fish_table = list(
 		/obj/item/food/badrecipe = 15,
 		/obj/item/food/nugget = 5,
 		/obj/item/fish/fryish = 40,
 		/obj/item/fish/fryish/fritterish = 4,
 		/obj/item/fish/fryish/nessie = 1,
+		/obj/item/fish/fryish/testaberration = 10,
 	)
 	fish_counts = list(
 		/obj/item/fish/fryish = 10,
 		/obj/item/fish/fryish/fritterish = 4,
 		/obj/item/fish/fryish/nessie = 1,
+		/obj/item/fish/fryish/testaberration = 1
 	)
 	fish_count_regen = list(
 		/obj/item/fish/fryish = 2 MINUTES,
@@ -648,6 +652,13 @@
 		/obj/item/fish/fryish/nessie = 22 MINUTES,
 	)
 	fishing_difficulty = FISHING_DEFAULT_DIFFICULTY + 23
+
+/obj/item/fish/fryish/testaberration
+	name = "I AM A TEST ABERRATION"
+	fish_traits = list(/datum/fish_trait/picky_eater, /datum/fish_trait/no_mating, /datum/fish_trait/aberrant)
+	fish_id = "test_aberration"
+	fish_flags = parent_type::fish_flags & ~FISH_FLAG_SHOW_IN_CATALOG
+	catch_sound = 'sound/mobs/non-humanoids/fish/fish_catch_aberration.ogg'
 
 /datum/fish_source/surgery
 	catalog_description = "Surgery"

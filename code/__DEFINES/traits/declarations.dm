@@ -245,6 +245,8 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_EXAMINE_DEEPER_FISH "examine_deeper_fish"
 ///Trait given to turfs or objects that can be fished from
 #define TRAIT_FISHING_SPOT "fishing_spot"
+///This trait lets you sense the presence of an aberrant fish, and see its catching hint
+#define TRAIT_ABERRATION_FISHER "aberration_fisher"
 ///This trait prevents the fishing spot from being linked to the fish-porter when a multitool is being used.
 #define TRAIT_UNLINKABLE_FISHING_SPOT "unlinkable_fishing_spot"
 ///Trait given to mobs that can fish without a rod

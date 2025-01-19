@@ -577,5 +577,27 @@
 /obj/item/survivalcapsule/fishing/hacked
 	obj_flags = parent_type::obj_flags | EMAGGED
 
+/obj/item/book/granter/aberrant_fishing_book
+	name = "\improper Treatise on the Eighth Sea"
+	desc = "A old volume of fishing lore bound in sharkskin. Some of the advice is rather peculiar, do the fish really care how the fisherman is feeling?"
+	icon = 'icons/obj/service/library.dmi'
+	icon_state = "book2"
+
+	remarks = list(
+		"Is that what the dark shapes under the surface were?",
+		"Did she eat a gunner jellyfish while she was writing this?",
+		"What does she mean by Eighth Sea, everyone knows there's only seven...",
+		"I think that sketch just moved... No, it must've been the light.",
+	)
+
+/obj/item/book/granter/aberrant_fishing_book/recoil(mob/living/user)
+	to_chat(user, span_warning("The author of this treatise was clearly deranged, nothing in these pages is worth your time."))
+
+/obj/item/book/granter/aberrant_fishing_book/on_reading_finished(mob/living/user)
+	..()
+	to_chat(user, span_notice("You've learned the ancient secrets of the sea!"))
+	if(user.mind)
+		ADD_TRAIT(user.mind, TRAIT_ABERRATION_FISHER, REF(src))
+
 #undef MAGNET_HOOK_BONUS_MULTIPLIER
 #undef RESCUE_HOOK_FISH_MULTIPLIER
