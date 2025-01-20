@@ -220,6 +220,7 @@
 #define AQUARIUM_FLUID_SULPHWATEVER "Sulfuric Water"
 #define AQUARIUM_FLUID_AIR "Air"
 #define AQUARIUM_FLUID_ANADROMOUS "Anadromous"
+#define AQUARIUM_FLUID_BLOOD "Blood"
 #define AQUARIUM_FLUID_ANY_WATER "Any Fluid"
 
 ///Fluff. The name of the aquarium company shown in the fish catalog

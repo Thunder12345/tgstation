@@ -818,10 +818,7 @@ GLOBAL_LIST_INIT(spontaneous_fish_traits, populate_spontaneous_fish_traits())
 	catalog_description = "Something is deeply wrong with this fish."
 
 /datum/fish_trait/aberrant/proc/aberration_condition(obj/item/fishing_rod/rod, mob/fisherman, datum/fishing_challenge/minigame)
-	if(fisherman.gender == "male")
-		return TRUE
-	else
-		return FALSE
+	. = TRUE
 
 /datum/fish_trait/aberrant/catch_weight_mod(obj/item/fishing_rod/rod, mob/fisherman, atom/location, obj/item/fish/fish_type)
 	. = ..()

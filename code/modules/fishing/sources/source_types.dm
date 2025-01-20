@@ -665,7 +665,13 @@
 	radial_state = "innards"
 	overlay_state = "portal_syndicate" //Didn't feel like spriting a new overlay. It's just all red anyway.
 	background = "background_lavaland" //Kinda red.
-	fish_table = list(FISHING_RANDOM_ORGAN = 10)
+	fish_table = list(
+		FISHING_RANDOM_ORGAN = 10,
+		/obj/item/fish/blood_eel = 1,
+		)
+	fish_counts = list(
+		/obj/item/fish/blood_eel = 1
+	)
 	//This should get you below zero difficulty and skip the minigame phase, unless you're wearing something that counteracts this.
 	fishing_difficulty = -10
 	//The range for waiting is also a bit narrower, so it cannot take as few as 3 seconds or as many as 25 to snatch an organ.
