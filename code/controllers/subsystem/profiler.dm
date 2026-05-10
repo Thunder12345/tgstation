@@ -1,6 +1,6 @@
 SUBSYSTEM_DEF(profiler)
 	name = "Profiler"
-	init_order = INIT_ORDER_PROFILER
+	init_stage = INITSTAGE_FIRST
 	runlevels = RUNLEVELS_DEFAULT | RUNLEVEL_LOBBY
 	wait = 300 SECONDS
 	var/fetch_cost = 0
@@ -16,6 +16,7 @@ SUBSYSTEM_DEF(profiler)
 		StartProfiling()
 	else
 		StopProfiling() //Stop the early start profiler
+	wait = CONFIG_GET(number/profiler_interval)
 	return SS_INIT_SUCCESS
 
 /datum/controller/subsystem/profiler/OnConfigLoad()

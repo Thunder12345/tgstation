@@ -58,6 +58,7 @@
 	id = "QMLoad";
 	name = "off ramp"
 	},
+/obj/effect/landmark/flaps_install,
 /turf/open/floor/plating,
 /area/shuttle/supply)
 "j" = (
@@ -91,7 +92,8 @@
 /obj/effect/decal/cleanable/dirt,
 /obj/effect/mapping_helpers/airlock/access/all/supply/general,
 /obj/docking_port/mobile/supply{
-	dir = 4
+	dir = 4;
+	port_direction = 8
 	},
 /turf/open/floor/mineral/plastitanium,
 /area/shuttle/supply)
@@ -165,6 +167,7 @@
 	id = "QMLoad2";
 	name = "on ramp"
 	},
+/obj/effect/landmark/flaps_install,
 /turf/open/floor/plating,
 /area/shuttle/supply)
 "u" = (

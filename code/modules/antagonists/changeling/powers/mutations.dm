@@ -11,6 +11,7 @@
 
 //Parent to shields and blades because muh copypasted code.
 /datum/action/changeling/weapon
+	abstract_type = /datum/action/changeling/weapon
 	name = "Organic Weapon"
 	desc = "Go tell a coder if you see this"
 	helptext = "Yell at Miauw and/or Perakp"
@@ -53,8 +54,8 @@
 	if(istype(hand_item, weapon_type))
 		user.temporarilyRemoveItemFromInventory(hand_item, TRUE) //DROPDEL will delete the item
 		if(!silent)
-			playsound(user, 'sound/effects/blobattack.ogg', 30, TRUE)
-			user.visible_message(span_warning("With a sickening crunch, [user] reforms [user.p_their()] [weapon_name_simple] into an arm!"), span_notice("We assimilate the [weapon_name_simple] back into our body."), "<span class='italics>You hear organic matter ripping and tearing!</span>")
+			playsound(user, 'sound/effects/blob/blobattack.ogg', 30, TRUE)
+			user.visible_message(span_warning("With a sickening crunch, [user] reforms [user.p_their()] [weapon_name_simple] into an arm!"), span_notice("We assimilate the [weapon_name_simple] back into our body."), span_italics("You hear organic matter ripping and tearing!"))
 		user.update_held_items()
 		return TRUE
 
@@ -71,7 +72,7 @@
 	if(HAS_TRAIT_FROM_ONLY(user, TRAIT_PARALYSIS_L_ARM, CHANGELING_TRAIT) || HAS_TRAIT_FROM_ONLY(user, TRAIT_PARALYSIS_R_ARM, CHANGELING_TRAIT))
 		user.balloon_alert(user, "not enough muscle!") // no cheesing repuprosed glands
 		return
-	if(user.active_hand_index % 2 == 0) //we regen the arm before changing it into the weapon
+	if(IS_RIGHT_INDEX(user.active_hand_index)) //we regen the arm before changing it into the weapon
 		limb_regen = user.regenerate_limb(BODY_ZONE_R_ARM, 1)
 	else
 		limb_regen = user.regenerate_limb(BODY_ZONE_L_ARM, 1)
@@ -81,12 +82,13 @@
 	var/obj/item/W = new weapon_type(user, silent)
 	user.put_in_hands(W)
 	if(!silent)
-		playsound(user, 'sound/effects/blobattack.ogg', 30, TRUE)
+		playsound(user, 'sound/effects/blob/blobattack.ogg', 30, TRUE)
 	return W
 
 
 //Parent to space suits and armor.
 /datum/action/changeling/suit
+	abstract_type = /datum/action/changeling/suit
 	name = "Organic Suit"
 	desc = "Go tell a coder if you see this"
 	helptext = "Yell at Miauw and/or Perakp"
@@ -173,23 +175,15 @@
 \***************************************/
 /datum/action/changeling/weapon/arm_blade
 	name = "Arm Blade"
-	desc = "We reform one of our arms into a deadly blade that breaks after a number of hits, improvable by absorbing genomes. Costs 40 chemicals."
-	helptext = "We may retract our armblade in the same manner as we form it. Organic tissue is not perfect; the armblade will break after it is used too much. The more genomes we absorb, the stronger it is. Cannot be used while in lesser form."
-	button_icon_state = "armblade"
-	chemical_cost = 30
-	dna_cost = 3
+	desc = "We reform one of our arms into a deadly blade. Costs 20 chemicals."
+	helptext = "We may retract our armblade in the same manner as we form it. Cannot be used while in lesser form."
+	button_icon_state = "arm_blade"
+	category = "combat"
+	chemical_cost = 20
+	dna_cost = 2
 	req_human = TRUE
 	weapon_type = /obj/item/melee/arm_blade
 	weapon_name_simple = "blade"
-
-/datum/action/changeling/weapon/arm_blade/sting_action(mob/living/carbon/user)
-	var/datum/antagonist/changeling/changeling = IS_CHANGELING(user) //So we can read the absorbed_count.
-	if(!changeling)
-		return
-
-	var/obj/item/melee/arm_blade/blade = ..()
-	blade.remaining_uses = round(changeling.absorbed_count * 3)
-	return TRUE
 
 /obj/item/melee/arm_blade
 	name = "arm blade"
@@ -197,6 +191,7 @@
 	icon = 'icons/obj/weapons/changeling_items.dmi'
 	icon_state = "arm_blade"
 	inhand_icon_state = "arm_blade"
+	icon_angle = 180
 	lefthand_file = 'icons/mob/inhands/antag/changeling_lefthand.dmi'
 	righthand_file = 'icons/mob/inhands/antag/changeling_righthand.dmi'
 	item_flags = NEEDS_PERMIT | ABSTRACT | DROPDEL
@@ -205,17 +200,17 @@
 	throwforce = 0 //Just to be on the safe side
 	throw_range = 0
 	throw_speed = 0
-	hitsound = 'sound/weapons/bladeslice.ogg'
-	attack_verb_continuous = list("attacks", "slashes", "stabs", "slices", "tears", "lacerates", "rips", "dices", "cuts")
-	attack_verb_simple = list("attack", "slash", "stab", "slice", "tear", "lacerate", "rip", "dice", "cut")
+	hitsound = 'sound/items/weapons/bladeslice.ogg'
+	attack_verb_continuous = list("attacks", "slashes", "slices", "tears", "lacerates", "rips", "dices", "cuts")
+	attack_verb_simple = list("attack", "slash", "slice", "tear", "lacerate", "rip", "dice", "cut")
 	sharpness = SHARP_EDGED
 	wound_bonus = 10
-	bare_wound_bonus = 10
+	exposed_wound_bonus = 10
 	armour_penetration = 35
-	resistance_flags = FLAMMABLE
 	var/can_drop = FALSE
 	var/fake = FALSE
-	var/remaining_uses
+	var/list/alt_continuous = list("stabs", "pierces", "impales")
+	var/list/alt_simple = list("stab", "pierce", "impale")
 
 /obj/item/melee/arm_blade/Initialize(mapload,silent,synthetic)
 	. = ..()
@@ -224,22 +219,23 @@
 		loc.visible_message(span_warning("A grotesque blade forms around [loc.name]\'s arm!"), span_warning("Our arm twists and mutates, transforming it into a deadly blade."), span_hear("You hear organic matter ripping and tearing!"))
 	if(synthetic)
 		can_drop = TRUE
+	alt_continuous = string_list(alt_continuous)
+	alt_simple = string_list(alt_simple)
+	AddComponent(/datum/component/alternative_sharpness, SHARP_POINTY, alt_continuous, alt_simple, -5)
 	AddComponent(/datum/component/butchering, \
 	speed = 6 SECONDS, \
 	effectiveness = 80, \
 	)
 
-/obj/item/melee/arm_blade/afterattack(atom/target, mob/user, proximity)
-	. = ..()
-	if(!proximity)
+/obj/item/melee/arm_blade/afterattack(atom/target, mob/user, list/modifiers, list/attack_modifiers)
+	if(QDELETED(target))
 		return
 	if(istype(target, /obj/structure/table))
-		var/obj/structure/table/T = target
-		T.deconstruct(FALSE)
+		var/obj/smash = target
+		smash.deconstruct(FALSE)
 
 	else if(istype(target, /obj/machinery/computer))
-		var/obj/machinery/computer/C = target
-		C.attack_alien(user) //muh copypasta
+		target.attack_alien(user) //muh copypasta
 
 	else if(istype(target, /obj/machinery/door/airlock))
 		var/obj/machinery/door/airlock/opening = target
@@ -253,22 +249,13 @@
 		if(opening.hasPower())
 			user.visible_message(span_warning("[user] jams [src] into the airlock and starts prying it open!"), span_warning("We start forcing the [opening] open."), \
 			span_hear("You hear a metal screeching sound."))
-			playsound(opening, 'sound/machines/airlock_alien_prying.ogg', 100, TRUE)
+			playsound(opening, 'sound/machines/airlock/airlock_alien_prying.ogg', 100, TRUE)
 			if(!do_after(user, 10 SECONDS, target = opening))
 				return
 		//user.say("Heeeeeeeeeerrre's Johnny!")
 		user.visible_message(span_warning("[user] forces the airlock to open with [user.p_their()] [src]!"), span_warning("We force the [opening] to open."), \
 		span_hear("You hear a metal screeching sound."))
 		opening.open(BYPASS_DOOR_CHECKS)
-
-	if(remaining_uses <= 1)
-		if(ishuman(loc))
-			var/mob/living/carbon/human/changeling = loc
-			changeling.visible_message(span_warning("With a sickening crunch, [changeling] reforms [changeling.p_their()] [src] into an arm!"), span_notice("We assimilate our armblade into our body."), "<span class='italics'>You hear organic matter ripping and tearing!</span>")
-		qdel(src)
-	else
-		remaining_uses--
-
 
 /obj/item/melee/arm_blade/dropped(mob/user)
 	..()
@@ -284,9 +271,10 @@
 	desc = "We ready a tentacle to grab items or victims with. Costs 10 chemicals."
 	helptext = "We can use it once to retrieve a distant item. If used on living creatures, the effect depends on our combat mode: \
 	In our neutral stance, we will simply drag them closer; if we try to shove, we will grab whatever they're holding in their active hand instead of them; \
-	in our combat stance, we will put the victim in our hold after catching them, and we will pull them in and stab them if we're also holding a sharp weapon. \
+	In our combat stance, we will put the victim in our hold after catching them, and we will pull them in and impale them if we're also holding a sharp weapon, or have an armblade. This pierces armor. \
 	Cannot be used while in lesser form."
 	button_icon_state = "tentacle"
+	category = "combat"
 	chemical_cost = 10
 	dna_cost = 2
 	req_human = TRUE
@@ -300,6 +288,7 @@
 	icon = 'icons/obj/weapons/changeling_items.dmi'
 	icon_state = "tentacle"
 	inhand_icon_state = "tentacle"
+	icon_angle = 180
 	lefthand_file = 'icons/mob/inhands/antag/changeling_lefthand.dmi'
 	righthand_file = 'icons/mob/inhands/antag/changeling_righthand.dmi'
 	item_flags = NEEDS_PERMIT | ABSTRACT | DROPDEL | NOBLUDGEON
@@ -312,12 +301,11 @@
 	fire_sound = 'sound/effects/splat.ogg'
 	force = 0
 	max_charges = 1
-	fire_delay = 1
+	fire_delay = 1 DECISECONDS
 	throwforce = 0 //Just to be on the safe side
 	throw_range = 0
 	throw_speed = 0
 	can_hold_up = FALSE
-	resistance_flags = FLAMMABLE
 
 /obj/item/gun/magic/tentacle/Initialize(mapload, silent)
 	. = ..()
@@ -366,7 +354,7 @@
 	damage = 0
 	damage_type = BRUTE
 	range = 8
-	hitsound = 'sound/weapons/thudswoosh.ogg'
+	hitsound = 'sound/items/weapons/shove.ogg'
 	var/chain
 	var/obj/item/ammo_casing/magic/tentacle/source //the item that shot it
 	///Click params that were used to fire the tentacle shot
@@ -381,26 +369,31 @@
 		chain = firer.Beam(src, icon_state = "tentacle", emissive = FALSE)
 	..()
 
-/obj/projectile/tentacle/proc/reset_throw(mob/living/carbon/human/H)
-	if(H.throw_mode)
-		H.throw_mode_off(THROW_MODE_TOGGLE) //Don't annoy the changeling if he doesn't catch the item
+/obj/projectile/tentacle/proc/reset_throw(mob/living/carbon/human/user)
+	if(user.throw_mode)
+		user.throw_mode_off(THROW_MODE_TOGGLE) //Don't annoy the changeling if he doesn't catch the item
 
-/obj/projectile/tentacle/proc/tentacle_grab(mob/living/carbon/human/H, mob/living/carbon/C)
-	if(H.Adjacent(C))
-		if(H.get_active_held_item() && !H.get_inactive_held_item())
-			H.swap_hand()
-		if(H.get_active_held_item())
+/obj/projectile/tentacle/proc/tentacle_grab(mob/living/carbon/human/user, mob/living/carbon/victim)
+	if(!user.Adjacent(victim))
+		return
+
+	if(user.get_active_held_item() && !user.get_inactive_held_item())
+		user.swap_hand()
+
+	if(user.get_active_held_item())
+		return
+
+	victim.grabbedby(user)
+	victim.grippedby(user, instant = TRUE) //instant aggro grab
+
+	for(var/obj/item/weapon in user.held_items)
+		if(weapon.get_sharpness())
+			victim.visible_message(span_danger("[user] impales [victim] with [user.p_their()] [weapon.name]!"), span_userdanger("[user] impales you with [user.p_their()] [weapon.name]!"))
+			victim.apply_damage(weapon.force, BRUTE, BODY_ZONE_CHEST, attacking_item = weapon)
+			user.do_item_attack_animation(victim, used_item = weapon, animation_type = ATTACK_ANIMATION_PIERCE)
+			user.add_blood_DNA_to_items(victim.get_blood_dna_list(), ITEM_SLOT_ICLOTHING|ITEM_SLOT_OCLOTHING)
+			playsound(get_turf(user),weapon.hitsound,75,TRUE)
 			return
-		C.grabbedby(H)
-		C.grippedby(H, instant = TRUE) //instant aggro grab
-		for(var/obj/item/I in H.held_items)
-			if(I.get_sharpness())
-				C.visible_message(span_danger("[H] impales [C] with [H.p_their()] [I.name]!"), span_userdanger("[H] impales you with [H.p_their()] [I.name]!"))
-				C.apply_damage(I.force, BRUTE, BODY_ZONE_CHEST, attacking_item = I)
-				H.do_item_attack_animation(C, used_item = I)
-				H.add_mob_blood(C)
-				playsound(get_turf(H),I.hitsound,75,TRUE)
-				return
 
 /obj/projectile/tentacle/on_hit(atom/movable/target, blocked = 0, pierce_hit)
 	if(!isliving(firer) || !ismovable(target))
@@ -498,6 +491,7 @@
 	desc = "We reform one of our arms into a hard shield. Costs 20 chemicals."
 	helptext = "Organic tissue cannot resist damage forever; the shield will break after it is hit too much. The more genomes we absorb, the stronger it is. Cannot be used while in lesser form."
 	button_icon_state = "organic_shield"
+	category = "combat"
 	chemical_cost = 20
 	dna_cost = 1
 	req_human = TRUE
@@ -514,9 +508,6 @@
 	S.remaining_uses = round(changeling.absorbed_count * 3)
 	return TRUE
 
-/datum/armor/item_shield/changeling
-	fire = -100
-
 /obj/item/shield/changeling
 	name = "shield-like mass"
 	desc = "A mass of tough, boney tissue. You can still see the fingers as a twisted pattern in the shield."
@@ -526,8 +517,7 @@
 	lefthand_file = 'icons/mob/inhands/antag/changeling_lefthand.dmi'
 	righthand_file = 'icons/mob/inhands/antag/changeling_righthand.dmi'
 	block_chance = 50
-	armor_type = /datum/armor/item_shield/changeling
-	resistance_flags = FLAMMABLE
+	is_bashable = FALSE
 
 	var/remaining_uses //Set by the changeling ability.
 
@@ -538,10 +528,13 @@
 		loc.visible_message(span_warning("The end of [loc.name]\'s hand inflates rapidly, forming a huge shield-like mass!"), span_warning("We inflate our hand into a strong shield."), span_hear("You hear organic matter ripping and tearing!"))
 
 /obj/item/shield/changeling/hit_reaction(mob/living/carbon/human/owner, atom/movable/hitby, attack_text = "the attack", final_block_chance = 0, damage = 0, attack_type = MELEE_ATTACK, damage_type = BRUTE)
-	if(remaining_uses <= 1)
+	if(attack_type == OVERWHELMING_ATTACK)
+		return FALSE
+
+	if(remaining_uses < 1)
 		if(ishuman(loc))
 			var/mob/living/carbon/human/H = loc
-			H.visible_message(span_warning("With a sickening crunch, [H] reforms [H.p_their()] shield into an arm!"), span_notice("We assimilate our shield into our body"), "<span class='italics>You hear organic matter ripping and tearing!</span>")
+			H.visible_message(span_warning("With a sickening crunch, [H] reforms [H.p_their()] shield into an arm!"), span_notice("We assimilate our shield into our body"), span_italics("You hear organic matter ripping and tearing!"))
 		qdel(src)
 		return 0
 	else
@@ -556,6 +549,7 @@
 	desc = "We turn our skin into tough chitin to protect us from damage. Costs 20 chemicals."
 	helptext = "Upkeep of the armor requires a low expenditure of chemicals. The armor provides decent protection against brute force and energy weapons. Cannot be used in lesser form."
 	button_icon_state = "chitinous_armor"
+	category = "combat"
 	chemical_cost = 20
 	dna_cost = 1
 	req_human = TRUE
@@ -577,7 +571,6 @@
 	flags_inv = HIDEJUMPSUIT
 	cold_protection = 0
 	heat_protection = 0
-	resistance_flags = FLAMMABLE
 
 /datum/armor/armor_changeling
 	melee = 40
@@ -586,7 +579,7 @@
 	energy = 50
 	bomb = 10
 	bio = 10
-	fire = -100
+	fire = 90
 	acid = 90
 
 /obj/item/clothing/suit/armor/changeling/Initialize(mapload)
@@ -603,7 +596,6 @@
 	item_flags = DROPDEL
 	armor_type = /datum/armor/helmet_changeling
 	flags_inv = HIDEEARS|HIDEHAIR|HIDEEYES|HIDEFACIALHAIR|HIDEFACE|HIDESNOUT
-	resistance_flags = FLAMMABLE
 
 /datum/armor/helmet_changeling
 	melee = 40
@@ -612,7 +604,7 @@
 	energy = 50
 	bomb = 10
 	bio = 10
-	fire = -90
+	fire = 90
 	acid = 90
 
 /obj/item/clothing/head/helmet/changeling/Initialize(mapload)
@@ -624,6 +616,7 @@
 	desc = "We coat our head in a waxy outing coating similar to a bee hive which can be used to manufacture bees to attack our enemies. Costs 15 chemicals."
 	helptext = "While the hive head does not provide much in the ways of armor, it does allow the user to send bees out to attack targets. Reagents can poured inside the hive to cause all bees released to inject said reagents."
 	button_icon_state = "hive_head"
+	category = "combat"
 	chemical_cost = 15
 	dna_cost = 2
 	req_human = FALSE
@@ -642,7 +635,6 @@
 	armor_type = /datum/armor/changeling_hivehead
 	flags_inv = HIDEEARS|HIDEHAIR|HIDEEYES|HIDEFACIALHAIR|HIDEFACE|HIDESNOUT
 	actions_types = list(/datum/action/cooldown/hivehead_spawn_minions)
-	resistance_flags = FLAMMABLE
 	///Does this hive head hold reagents?
 	var/holds_reagents = TRUE
 
@@ -657,23 +649,21 @@
 	laser = 10
 	energy = 10
 	bio = 50
-	fire = -100
 
 /obj/item/clothing/head/helmet/changeling_hivehead/Initialize(mapload)
 	. = ..()
 	ADD_TRAIT(src, TRAIT_NODROP, CHANGELING_TRAIT)
 
-/obj/item/clothing/head/helmet/changeling_hivehead/attackby(obj/item/attacking_item, mob/user, params)
-	. = ..()
-	if(!istype(attacking_item, /obj/item/organ/internal/monster_core/regenerative_core/legion) || !holds_reagents)
-		return
-	visible_message(span_boldwarning("As [user] shoves [attacking_item] into [src], [src] begins to mutate."))
+/obj/item/clothing/head/helmet/changeling_hivehead/item_interaction(mob/living/user, obj/item/tool, list/modifiers)
+	if(!istype(tool, /obj/item/organ/monster_core/regenerative_core/legion) || !holds_reagents)
+		return NONE
+	visible_message(span_boldwarning("As [user] shoves [tool] into [src], [src] begins to mutate."))
 	var/mob/living/carbon/wearer = loc
-	playsound(wearer, 'sound/effects/attackblob.ogg', 60, TRUE)
+	playsound(wearer, 'sound/effects/blob/attackblob.ogg', 60, TRUE)
 	wearer.temporarilyRemoveItemFromInventory(wearer.head, TRUE)
 	wearer.equip_to_slot_if_possible(new /obj/item/clothing/head/helmet/changeling_hivehead/legion(wearer), ITEM_SLOT_HEAD, 1, 1, 1)
-	qdel(attacking_item)
-
+	qdel(tool)
+	return ITEM_INTERACT_SUCCESS
 
 /datum/action/cooldown/hivehead_spawn_minions
 	name = "Release Bees"
@@ -691,7 +681,7 @@
 /datum/action/cooldown/hivehead_spawn_minions/PreActivate(atom/target)
 	if(owner.movement_type & VENTCRAWLING)
 		owner.balloon_alert(owner, "unavailable here")
-		return
+		return FALSE
 	return ..()
 
 /datum/action/cooldown/hivehead_spawn_minions/Activate(atom/target)
@@ -701,14 +691,15 @@
 	if(owner.stat >= HARD_CRIT)
 		spawns = 1
 	for(var/i in 1 to spawns)
-		var/mob/living/basic/summoned_minion = new spawn_type(get_turf(owner))
-		summoned_minion.faction = list("[REF(owner)]")
+		var/mob/living/basic/summoned_minion = new spawn_type(owner.drop_location())
+		summoned_minion.set_allies(list("[REF(owner)]"))
+		summoned_minion.set_faction(null)
 		minion_additional_changes(summoned_minion)
 
 ///Our tell that we're using this ability. Usually a sound and a visible message.area
 /datum/action/cooldown/hivehead_spawn_minions/proc/do_tell()
 	owner.visible_message(span_warning("[owner]'s head begins to buzz as bees begin to pour out!"), span_warning("We release the bees."), span_hear("You hear a loud buzzing sound!"))
-	playsound(owner, 'sound/creatures/bee_swarm.ogg', 60, TRUE)
+	playsound(owner, 'sound/mobs/non-humanoids/bee/bee_swarm.ogg', 60, TRUE)
 
 ///Stuff we want to do to our minions. This is in its own proc so subtypes can override this behaviour.
 /datum/action/cooldown/hivehead_spawn_minions/proc/minion_additional_changes(mob/living/basic/minion)
@@ -730,14 +721,14 @@
 	button_icon = 'icons/mob/simple/lavaland/lavaland_monsters.dmi'
 	button_icon_state = "legion_head"
 	cooldown_time = 15 SECONDS
-	spawn_type = /mob/living/basic/legion_brood
+	spawn_type = /mob/living/basic/mining/legion_brood
 	spawn_count = 4
 
 /datum/action/cooldown/hivehead_spawn_minions/legion/do_tell()
 	owner.visible_message(span_warning("[owner]'s head begins to shake as legion begin to pour out!"), span_warning("We release the legion."), span_hear("You hear a loud squishing sound!"))
-	playsound(owner, 'sound/effects/attackblob.ogg', 60, TRUE)
+	playsound(owner, 'sound/effects/blob/attackblob.ogg', 60, TRUE)
 
 /datum/action/cooldown/hivehead_spawn_minions/legion/minion_additional_changes(mob/living/basic/minion)
-	var/mob/living/basic/legion_brood/brood = minion
+	var/mob/living/basic/mining/legion_brood/brood = minion
 	if (istype(brood))
 		brood.assign_creator(owner, FALSE)

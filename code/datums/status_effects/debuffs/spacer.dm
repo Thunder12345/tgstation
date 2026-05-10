@@ -3,6 +3,7 @@
 /datum/status_effect/spacer
 	id = "spacer_gravity_effects"
 	status_type = STATUS_EFFECT_REPLACE
+	alert_type = null
 	/// Essentially, tracks whether this is a planetary map.
 	/// It'd be pretty miserable if you're playing a planetary map and getting the worse of all effects, so we handwave it a bit.
 	VAR_FINAL/nerfed_effects_because_planetary = FALSE
@@ -40,9 +41,9 @@
 
 	if(seconds_in_nograv >= 3 MINUTES)
 		// This has some interesting side effects with gravitum or similar negating effects that may be worth nothing
-		owner.adjustStaminaLoss(-1 * stamina_heal_per_tick)
+		owner.adjust_stamina_loss(-1 * stamina_heal_per_tick)
 		owner.AdjustAllImmobility(-1 * stun_heal_per_tick)
-		// For comparison: Ephedrine heals 1 stamina per tick / 0.5 per second
+		// For comparison: Ephedrine heals 4 stamina per tick / 2 per second
 		// and Nicotine heals 5 seconds of stun per tick / 2.5 per second
 
 // The bad side (being on a planet)
@@ -73,8 +74,8 @@
 
 	var/minutes_active = round(seconds_active / (1 MINUTES))
 	// Sit at a passive amount of stamina damage depending on how long it's been
-	if(!the_spacer.getStaminaLoss())
-		the_spacer.adjustStaminaLoss(min(25, 5 * minutes_active))
+	if(!the_spacer.get_stamina_loss())
+		the_spacer.adjust_stamina_loss(min(25, 5 * minutes_active))
 	// Max disgust increases over time as well
 	max_disgust = min(DISGUST_LEVEL_VERYGROSS + 5, initial(max_disgust) + 5 * minutes_active)
 	// And your lungs can't really handle it good
@@ -84,10 +85,10 @@
 /atom/movable/screen/alert/status_effect/gravity_sickness
 	name = "Gravity Sickness"
 	desc = "The gravity of the planet around you is making you feel sick and tired."
-	icon_state = "paralysis"
+	use_user_hud_icon = USER_HUD_STYLE_INHERIT
+	overlay_state = "paralysis"
 
 /datum/mood_event/spacer
-	category = "spacer"
 
 /datum/mood_event/spacer/in_space
 	description = "Space is long and dark and empty, but it's my home."
@@ -103,6 +104,20 @@
 /datum/mood_event/spacer/on_planet/nerfed
 	description = "I'm stationed on a planet. I'd love to be back in space."
 	mood_change = -3
+
+/datum/mood_event/spacer/on_planet/low_grav
+	description = "This feels like I'm back home!"
+	mood_change = 3
+
+/datum/mood_event/spacer/on_planet/low_grav/add_effects(...)
+	. = ..()
+	addtimer(CALLBACK(src, PROC_REF(lower_mood_bonus)), 5 MINUTES, TIMER_DELETE_ME)
+
+/datum/mood_event/spacer/on_planet/low_grav/proc/lower_mood_bonus()
+	mood_change -= 1
+	owner.mob_mood.update_mood()
+	if(mood_change > 1)
+		addtimer(CALLBACK(src, PROC_REF(lower_mood_bonus)), 5 MINUTES, TIMER_DELETE_ME)
 
 /datum/movespeed_modifier/spacer
 	id = "spacer"

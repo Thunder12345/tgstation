@@ -272,7 +272,7 @@ GLOBAL_LIST_EMPTY(bodycontainers) //Let them act as spawnpoints for revenants an
 	update_morgue_status()
 	update_appearance(UPDATE_ICON_STATE)
 	if(morgue_state == MORGUE_HAS_REVIVABLE && beeper && COOLDOWN_FINISHED(src, next_beep))
-		playsound(src, 'sound/weapons/gun/general/empty_alarm.ogg', 50, FALSE) //Revive them you blind fucks
+		playsound(src, 'sound/items/weapons/gun/general/empty_alarm.ogg', 50, FALSE) //Revive them you blind fucks
 		COOLDOWN_START(src, next_beep, beep_cooldown)
 
 	if(!connected || connected.loc != src)
@@ -315,17 +315,24 @@ GLOBAL_LIST_EMPTY(bodycontainers) //Let them act as spawnpoints for revenants an
 		return
 
 	for(var/mob/living/occupant as anything in stored_living)
-		if(occupant.stat == DEAD)
-			if(iscarbon(occupant))
-				var/mob/living/carbon/carbon_occupant = occupant
-				if(!carbon_occupant.can_defib_client())
-					continue
-			else
-				if(HAS_TRAIT(occupant, TRAIT_SUICIDED) || HAS_TRAIT(occupant, TRAIT_BADDNA) || (!occupant.key && !occupant.get_ghost(FALSE, TRUE)))
-					continue
-		morgue_state = MORGUE_HAS_REVIVABLE
-		return
+		if(occupant_revivable(occupant))
+			morgue_state = MORGUE_HAS_REVIVABLE
+			return
 	morgue_state = MORGUE_ONLY_BRAINDEAD
+
+/obj/structure/bodycontainer/morgue/proc/occupant_revivable(mob/living/occupant)
+	if(occupant.stat != DEAD)
+		return TRUE
+	if(HAS_TRAIT(occupant, TRAIT_GHOSTROLE_ON_REVIVE) && length(occupant.get_all_orbiters()))
+		return TRUE
+	if(iscarbon(occupant))
+		var/mob/living/carbon/carbon_occupant = occupant
+		return carbon_occupant.can_defib_client()
+	if(HAS_TRAIT(occupant, TRAIT_SUICIDED))
+		return FALSE
+	if(!occupant.key && !occupant.get_ghost(FALSE, TRUE))
+		return FALSE
+	return TRUE
 
 /obj/structure/bodycontainer/morgue/proc/handle_bodybag_enter(obj/structure/closet/body_bag/arrived_bag)
 	if(!arrived_bag.tag_name)
@@ -425,6 +432,10 @@ GLOBAL_LIST_EMPTY(crematoriums)
 
 /obj/structure/bodycontainer/crematorium/Initialize(mapload)
 	. = ..()
+	if(mapload && check_holidays(ICE_CREAM_DAY) && !istype(src, /obj/structure/bodycontainer/crematorium/creamatorium))
+		var/obj/structure/bodycontainer/crematorium/creamatorium/creamy = new(loc)
+		creamy.id = id
+		return INITIALIZE_HINT_QDEL
 	GLOB.crematoriums += src
 
 /obj/structure/bodycontainer/crematorium/Destroy()
@@ -477,7 +488,7 @@ GLOBAL_LIST_EMPTY(crematoriums)
 			if(user.stat != DEAD)
 				user.investigate_log("has died from being cremated.", INVESTIGATE_DEATHS)
 			M.death(TRUE)
-			if(M) //some animals get automatically deleted on death.
+			if(!QDELETED(M)) //some animals get automatically deleted on death.
 				M.ghostize()
 				qdel(M)
 
@@ -518,6 +529,7 @@ GLOBAL_LIST_EMPTY(crematoriums)
 	density = TRUE
 	anchored = TRUE
 	pass_flags_self = PASSTABLE | LETPASSTHROW
+
 	max_integrity = 350
 
 	///The bodycontainer we are a tray to.
@@ -549,7 +561,7 @@ GLOBAL_LIST_EMPTY(crematoriums)
 		to_chat(user, span_warning("That's not connected to anything!"))
 	add_fingerprint(user)
 
-/obj/structure/tray/attackby(obj/P, mob/user, params)
+/obj/structure/tray/attackby(obj/P, mob/user, list/modifiers, list/attack_modifiers)
 	if(!istype(P, /obj/item/riding_offhand))
 		return ..()
 
@@ -558,10 +570,10 @@ GLOBAL_LIST_EMPTY(crematoriums)
 	if(carried_mob == user) //Piggyback user.
 		return
 	user.unbuckle_mob(carried_mob)
-	MouseDrop_T(carried_mob, user)
+	mouse_drop_receive(carried_mob, user)
 
-/obj/structure/tray/MouseDrop_T(atom/movable/O as mob|obj, mob/user)
-	if(!ismovable(O) || O.anchored || !Adjacent(user) || !user.Adjacent(O) || O.loc == user)
+/obj/structure/tray/mouse_drop_receive(atom/movable/O as mob|obj, mob/user, params)
+	if(!ismovable(O) || O.anchored || O.loc == user)
 		return
 	if(!ismob(O))
 		if(!istype(O, /obj/structure/closet/body_bag))
@@ -570,16 +582,9 @@ GLOBAL_LIST_EMPTY(crematoriums)
 		var/mob/M = O
 		if(M.buckled)
 			return
-	if(!ismob(user) || user.incapacitated())
-		return
-	if(isliving(user))
-		var/mob/living/L = user
-		if(L.body_position == LYING_DOWN)
-			return
 	O.forceMove(src.loc)
 	if (user != O)
 		visible_message(span_warning("[user] stuffs [O] into [src]."))
-	return
 
 /*
  * Crematorium tray

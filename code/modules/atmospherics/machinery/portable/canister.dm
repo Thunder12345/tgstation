@@ -6,8 +6,9 @@
 /obj/machinery/portable_atmospherics/canister
 	name = "canister"
 	desc = "A canister for the storage of gas."
-	icon = 'icons/obj/pipes_n_cables/canisters.dmi'
-	icon_state = "#mapme"
+	icon = 'icons/map_icons/objects.dmi'
+	icon_state = "/obj/machinery/portable_atmospherics/canister"
+	post_init_icon_state = ""
 	greyscale_config = /datum/greyscale_config/canister
 	greyscale_colors = "#6b6b80"
 	density = TRUE
@@ -17,6 +18,7 @@
 	integrity_failure = 0.4
 	pressure_resistance = 7 * ONE_ATMOSPHERE
 	req_access = list()
+	custom_materials = list(/datum/material/iron = SHEET_MATERIAL_AMOUNT * 10)
 
 	///Is the valve open?
 	var/valve_open = FALSE
@@ -35,7 +37,7 @@
 	///Is shielding turned on/off
 	var/shielding_powered = FALSE
 	///The powercell used to enable shielding
-	var/obj/item/stock_parts/cell/internal_cell
+	var/obj/item/stock_parts/power_store/internal_cell
 	///used while processing to update appearance only when its pressure state changes
 	var/current_pressure_state
 
@@ -48,15 +50,19 @@
 	fire = 80
 	acid = 50
 
-/obj/machinery/portable_atmospherics/canister/Initialize(mapload, datum/gas_mixture/existing_mixture)
+/obj/machinery/portable_atmospherics/canister/get_save_vars()
+	. = ..()
+	. += NAMEOF(src, valve_open)
+	. += NAMEOF(src, release_pressure)
+	return .
+
+/obj/machinery/portable_atmospherics/canister/Initialize(mapload)
 	. = ..()
 
 	if(mapload)
-		internal_cell = new /obj/item/stock_parts/cell/high(src)
+		internal_cell = new /obj/item/stock_parts/power_store/cell/high(src)
 
-	if(existing_mixture)
-		air_contents.copy_from(existing_mixture)
-	else
+	if(!initial_gas_mix)
 		create_gas()
 
 	if(ispath(gas_type, /datum/gas))
@@ -71,13 +77,12 @@
 	AddElement(/datum/element/atmos_sensitive, mapload)
 	AddElement(/datum/element/volatile_gas_storage)
 	AddComponent(/datum/component/gas_leaker, leak_rate=0.01)
-	register_context()
 
 /obj/machinery/portable_atmospherics/canister/interact(mob/user)
 	. = ..()
 	if(!allowed(user))
 		to_chat(user, span_alert("Error - Unauthorized User."))
-		playsound(src, 'sound/misc/compiler-failure.ogg', 50, TRUE)
+		playsound(src, 'sound/machines/compiler/compiler-failure.ogg', 50, TRUE)
 		return
 
 /obj/machinery/portable_atmospherics/canister/add_context(atom/source, list/context, obj/item/held_item, mob/user)
@@ -86,7 +91,7 @@
 		context[SCREENTIP_CONTEXT_ALT_LMB] = "Remove tank"
 	if(!held_item)
 		return CONTEXTUAL_SCREENTIP_SET
-	if(istype(held_item, /obj/item/stock_parts/cell))
+	if(istype(held_item, /obj/item/stock_parts/power_store/cell))
 		context[SCREENTIP_CONTEXT_LMB] = "Insert cell"
 	switch(held_item.tool_behaviour)
 		if(TOOL_SCREWDRIVER)
@@ -102,6 +107,8 @@
 
 /obj/machinery/portable_atmospherics/canister/examine(user)
 	. = ..()
+	if(atom_integrity < max_integrity)
+		. += span_notice("Integrity compromised, repair hull with a welding tool.")
 	. += span_notice("A sticker on its side says <b>MAX SAFE PRESSURE: [siunit_pressure(initial(pressure_limit), 0)]; MAX SAFE TEMPERATURE: [siunit(temp_limit, "K", 0)]</b>.")
 	. += span_notice("The hull is <b>welded</b> together and can be cut apart.")
 	if(internal_cell)
@@ -110,8 +117,6 @@
 		. += span_notice("Warning, no cell installed, use a screwdriver to open the hatch and insert one.")
 	if(panel_open)
 		. += span_notice("Hatch open, close it with a screwdriver.")
-	if(integrity_failure)
-		. += span_notice("Integrity compromised, repair hull with a welding tool.")
 
 // Please keep the canister types sorted
 // Basic canister per gas below here
@@ -119,6 +124,8 @@
 /obj/machinery/portable_atmospherics/canister/air
 	name = "Air canister"
 	desc = "Pre-mixed air."
+	icon_state = "/obj/machinery/portable_atmospherics/canister/air"
+	post_init_icon_state = ""
 	greyscale_config = /datum/greyscale_config/canister
 	greyscale_colors = "#c6c0b5"
 
@@ -126,18 +133,24 @@
 	name = "Antinoblium canister"
 	gas_type = /datum/gas/antinoblium
 	filled = 1
+	icon_state = "/obj/machinery/portable_atmospherics/canister/antinoblium"
+	post_init_icon_state = ""
 	greyscale_config = /datum/greyscale_config/canister/double_stripe
 	greyscale_colors = "#333333#fefb30"
 
 /obj/machinery/portable_atmospherics/canister/bz
 	name = "\improper BZ canister"
 	gas_type = /datum/gas/bz
+	icon_state = "/obj/machinery/portable_atmospherics/canister/bz"
+	post_init_icon_state = ""
 	greyscale_config = /datum/greyscale_config/canister/double_stripe
 	greyscale_colors = "#9b5d7f#d0d2a0"
 
 /obj/machinery/portable_atmospherics/canister/carbon_dioxide
 	name = "Carbon dioxide canister"
 	gas_type = /datum/gas/carbon_dioxide
+	icon_state = "/obj/machinery/portable_atmospherics/canister/carbon_dioxide"
+	post_init_icon_state = ""
 	greyscale_config = /datum/greyscale_config/canister/double_stripe
 	greyscale_colors = "#4e4c48#eaeaea"
 
@@ -145,6 +158,8 @@
 	name = "Freon canister"
 	gas_type = /datum/gas/freon
 	filled = 1
+	icon_state = "/obj/machinery/portable_atmospherics/canister/freon"
+	post_init_icon_state = ""
 	greyscale_config = /datum/greyscale_config/canister/double_stripe
 	greyscale_colors = "#6696ee#fefb30"
 
@@ -152,6 +167,8 @@
 	name = "Halon canister"
 	gas_type = /datum/gas/halon
 	filled = 1
+	icon_state = "/obj/machinery/portable_atmospherics/canister/halon"
+	post_init_icon_state = ""
 	greyscale_config = /datum/greyscale_config/canister/double_stripe
 	greyscale_colors = "#9b5d7f#368bff"
 
@@ -159,6 +176,8 @@
 	name = "Healium canister"
 	gas_type = /datum/gas/healium
 	filled = 1
+	icon_state = "/obj/machinery/portable_atmospherics/canister/healium"
+	post_init_icon_state = ""
 	greyscale_config = /datum/greyscale_config/canister/double_stripe
 	greyscale_colors = "#009823#ff0e00"
 
@@ -166,6 +185,8 @@
 	name = "Helium canister"
 	gas_type = /datum/gas/helium
 	filled = 1
+	icon_state = "/obj/machinery/portable_atmospherics/canister/helium"
+	post_init_icon_state = ""
 	greyscale_config = /datum/greyscale_config/canister/double_stripe
 	greyscale_colors = "#9b5d7f#368bff"
 
@@ -173,6 +194,8 @@
 	name = "Hydrogen canister"
 	gas_type = /datum/gas/hydrogen
 	filled = 1
+	icon_state = "/obj/machinery/portable_atmospherics/canister/hydrogen"
+	post_init_icon_state = ""
 	greyscale_config = /datum/greyscale_config/canister/double_stripe
 	greyscale_colors = "#eaeaea#be3455"
 
@@ -180,42 +203,56 @@
 	name = "Miasma canister"
 	gas_type = /datum/gas/miasma
 	filled = 1
+	icon_state = "/obj/machinery/portable_atmospherics/canister/miasma"
+	post_init_icon_state = ""
 	greyscale_config = /datum/greyscale_config/canister/double_stripe
 	greyscale_colors = "#009823#f7d5d3"
 
 /obj/machinery/portable_atmospherics/canister/nitrogen
 	name = "Nitrogen canister"
 	gas_type = /datum/gas/nitrogen
+	icon_state = "/obj/machinery/portable_atmospherics/canister/nitrogen"
+	post_init_icon_state = ""
 	greyscale_config = /datum/greyscale_config/canister/double_stripe
 	greyscale_colors = "#e9ff5c#f4fce8"
 
 /obj/machinery/portable_atmospherics/canister/nitrous_oxide
 	name = "Nitrous oxide canister"
 	gas_type = /datum/gas/nitrous_oxide
+	icon_state = "/obj/machinery/portable_atmospherics/canister/nitrous_oxide"
+	post_init_icon_state = ""
 	greyscale_config = /datum/greyscale_config/canister/double_stripe
 	greyscale_colors = "#c63e3b#f7d5d3"
 
 /obj/machinery/portable_atmospherics/canister/nitrium
 	name = "Nitrium canister"
 	gas_type = /datum/gas/nitrium
+	icon_state = "/obj/machinery/portable_atmospherics/canister/nitrium"
+	post_init_icon_state = ""
 	greyscale_config = /datum/greyscale_config/canister
 	greyscale_colors = "#7b4732"
 
 /obj/machinery/portable_atmospherics/canister/nob
 	name = "Hyper-noblium canister"
 	gas_type = /datum/gas/hypernoblium
+	icon_state = "/obj/machinery/portable_atmospherics/canister/nob"
+	post_init_icon_state = ""
 	greyscale_config = /datum/greyscale_config/canister/double_stripe
 	greyscale_colors = "#6399fc#b2b2b2"
 
 /obj/machinery/portable_atmospherics/canister/oxygen
 	name = "Oxygen canister"
 	gas_type = /datum/gas/oxygen
+	icon_state = "/obj/machinery/portable_atmospherics/canister/oxygen"
+	post_init_icon_state = ""
 	greyscale_config = /datum/greyscale_config/canister/stripe
 	greyscale_colors = "#2786e5#e8fefe"
 
 /obj/machinery/portable_atmospherics/canister/pluoxium
 	name = "Pluoxium canister"
 	gas_type = /datum/gas/pluoxium
+	icon_state = "/obj/machinery/portable_atmospherics/canister/pluoxium"
+	post_init_icon_state = ""
 	greyscale_config = /datum/greyscale_config/canister
 	greyscale_colors = "#2786e5"
 
@@ -223,18 +260,24 @@
 	name = "Proto Nitrate canister"
 	gas_type = /datum/gas/proto_nitrate
 	filled = 1
+	icon_state = "/obj/machinery/portable_atmospherics/canister/proto_nitrate"
+	post_init_icon_state = ""
 	greyscale_config = /datum/greyscale_config/canister/double_stripe
 	greyscale_colors = "#008200#33cc33"
 
 /obj/machinery/portable_atmospherics/canister/plasma
 	name = "Plasma canister"
 	gas_type = /datum/gas/plasma
+	icon_state = "/obj/machinery/portable_atmospherics/canister/plasma"
+	post_init_icon_state = ""
 	greyscale_config = /datum/greyscale_config/canister/hazard
 	greyscale_colors = "#f62800#000000"
 
 /obj/machinery/portable_atmospherics/canister/tritium
 	name = "Tritium canister"
 	gas_type = /datum/gas/tritium
+	icon_state = "/obj/machinery/portable_atmospherics/canister/tritium"
+	post_init_icon_state = ""
 	greyscale_config = /datum/greyscale_config/canister/hazard
 	greyscale_colors = "#3fcd40#000000"
 
@@ -242,6 +285,8 @@
 	name = "Water vapor canister"
 	gas_type = /datum/gas/water_vapor
 	filled = 1
+	icon_state = "/obj/machinery/portable_atmospherics/canister/water_vapor"
+	post_init_icon_state = ""
 	greyscale_config = /datum/greyscale_config/canister/double_stripe
 	greyscale_colors = "#4c4e4d#f7d5d3"
 
@@ -249,6 +294,8 @@
 	name = "Zauker canister"
 	gas_type = /datum/gas/zauker
 	filled = 1
+	icon_state = "/obj/machinery/portable_atmospherics/canister/zauker"
+	post_init_icon_state = ""
 	greyscale_config = /datum/greyscale_config/canister/double_stripe
 	greyscale_colors = "#009a00#006600"
 
@@ -261,22 +308,22 @@
 	pressure_limit = 1e14
 
 /obj/machinery/portable_atmospherics/canister/fusion_test/create_gas()
-	air_contents.add_gases(/datum/gas/hydrogen, /datum/gas/tritium)
-	air_contents.gases[/datum/gas/hydrogen][MOLES] = 300
-	air_contents.gases[/datum/gas/tritium][MOLES] = 300
+	air_contents.adjust_gas(/datum/gas/hydrogen, 300)
+	air_contents.adjust_gas(/datum/gas/tritium, 300)
 	air_contents.temperature = 10000
 	SSair.start_processing_machine(src)
 
 /obj/machinery/portable_atmospherics/canister/anesthetic_mix
 	name = "Anesthetic mix"
 	desc = "A mixture of N2O and Oxygen"
+	icon_state = "/obj/machinery/portable_atmospherics/canister/anesthetic_mix"
+	post_init_icon_state = ""
 	greyscale_config = /datum/greyscale_config/canister/double_stripe
 	greyscale_colors = "#9fba6c#3d4680"
 
 /obj/machinery/portable_atmospherics/canister/anesthetic_mix/create_gas()
-	air_contents.add_gases(/datum/gas/oxygen, /datum/gas/nitrous_oxide)
-	air_contents.gases[/datum/gas/oxygen][MOLES] = (O2_ANESTHETIC * maximum_pressure * filled) * air_contents.volume / (R_IDEAL_GAS_EQUATION * air_contents.temperature)
-	air_contents.gases[/datum/gas/nitrous_oxide][MOLES] = (N2O_ANESTHETIC * maximum_pressure * filled) * air_contents.volume / (R_IDEAL_GAS_EQUATION * air_contents.temperature)
+	air_contents.adjust_gas(/datum/gas/oxygen, (O2_ANESTHETIC * maximum_pressure * filled) * air_contents.volume / (R_IDEAL_GAS_EQUATION * air_contents.temperature))
+	air_contents.adjust_gas(/datum/gas/nitrous_oxide, (N2O_ANESTHETIC * maximum_pressure * filled) * air_contents.volume / (R_IDEAL_GAS_EQUATION * air_contents.temperature))
 	SSair.start_processing_machine(src)
 
 /**
@@ -286,14 +333,12 @@
 /obj/machinery/portable_atmospherics/canister/proc/create_gas()
 	if(!gas_type)
 		return
-	air_contents.add_gas(gas_type)
-	air_contents.gases[gas_type][MOLES] = (maximum_pressure * filled) * air_contents.volume / (R_IDEAL_GAS_EQUATION * air_contents.temperature)
+	air_contents.adjust_gas(gas_type, (maximum_pressure * filled) * air_contents.volume / (R_IDEAL_GAS_EQUATION * air_contents.temperature))
 	SSair.start_processing_machine(src)
 
 /obj/machinery/portable_atmospherics/canister/air/create_gas()
-	air_contents.add_gases(/datum/gas/oxygen, /datum/gas/nitrogen)
-	air_contents.gases[/datum/gas/oxygen][MOLES] = (O2STANDARD * maximum_pressure * filled) * air_contents.volume / (R_IDEAL_GAS_EQUATION * air_contents.temperature)
-	air_contents.gases[/datum/gas/nitrogen][MOLES] = (N2STANDARD * maximum_pressure * filled) * air_contents.volume / (R_IDEAL_GAS_EQUATION * air_contents.temperature)
+	air_contents.adjust_gas(/datum/gas/oxygen, (O2STANDARD * maximum_pressure * filled) * air_contents.volume / (R_IDEAL_GAS_EQUATION * air_contents.temperature))
+	air_contents.adjust_gas(/datum/gas/nitrogen, (N2STANDARD * maximum_pressure * filled) * air_contents.volume / (R_IDEAL_GAS_EQUATION * air_contents.temperature))
 	SSair.start_processing_machine(src)
 
 /obj/machinery/portable_atmospherics/canister/update_icon_state()
@@ -367,9 +412,9 @@
 	if(internal_cell)
 		internal_cell.forceMove(drop_location())
 
-/obj/machinery/portable_atmospherics/canister/attackby(obj/item/item, mob/user, params)
-	if(istype(item, /obj/item/stock_parts/cell))
-		var/obj/item/stock_parts/cell/active_cell = item
+/obj/machinery/portable_atmospherics/canister/attackby(obj/item/item, mob/user, list/modifiers, list/attack_modifiers)
+	if(istype(item, /obj/item/stock_parts/power_store/cell))
+		var/obj/item/stock_parts/power_store/cell/active_cell = item
 		if(!panel_open)
 			balloon_alert(user, "open hatch first!")
 			return TRUE
@@ -385,9 +430,7 @@
 	return ..()
 
 /obj/machinery/portable_atmospherics/canister/screwdriver_act(mob/living/user, obj/item/screwdriver)
-	if(default_deconstruction_screwdriver(user, icon_state, icon_state, screwdriver))
-		update_appearance()
-		return ITEM_INTERACT_SUCCESS
+	return default_deconstruction_screwdriver(user, screwdriver)
 
 /obj/machinery/portable_atmospherics/canister/crowbar_act(mob/living/user, obj/item/tool)
 	if(!panel_open || !internal_cell)
@@ -398,7 +441,7 @@
 	return ITEM_INTERACT_SUCCESS
 
 /obj/machinery/portable_atmospherics/canister/welder_act_secondary(mob/living/user, obj/item/I)
-	if(!I.tool_start_check(user, amount=1))
+	if(!I.tool_start_check(user, amount=1, heat_required = HIGH_TEMPERATURE_REQUIRED))
 		return ITEM_INTERACT_BLOCKING
 
 	var/pressure = air_contents.return_pressure()
@@ -412,22 +455,6 @@
 		deconstruct(TRUE)
 
 	return ITEM_INTERACT_SUCCESS
-
-/obj/machinery/portable_atmospherics/canister/welder_act(mob/living/user, obj/item/tool)
-	if(user.combat_mode)
-		return
-	if(atom_integrity >= max_integrity || (machine_stat & BROKEN) || !tool.tool_start_check(user, amount = 1))
-		return ITEM_INTERACT_SUCCESS
-
-	to_chat(user, span_notice("You begin repairing cracks in [src]..."))
-	while(tool.use_tool(src, user, 2.5 SECONDS, volume=40))
-		atom_integrity = min(atom_integrity + 25, max_integrity)
-		if(atom_integrity >= max_integrity)
-			to_chat(user, span_notice("You've finished repairing [src]."))
-			return ITEM_INTERACT_SUCCESS
-		to_chat(user, span_notice("You repair some of the cracks in [src]..."))
-
-	return ITEM_INTERACT_BLOCKING
 
 /obj/machinery/portable_atmospherics/canister/Exited(atom/movable/gone, direction)
 	. = ..()
@@ -478,18 +505,24 @@
 		user.investigate_log("started a transfer into [holding].", INVESTIGATE_ATMOS)
 
 /obj/machinery/portable_atmospherics/canister/process(seconds_per_tick)
+	if(!shielding_powered)
+		return
+
 	var/our_pressure = air_contents.return_pressure()
 	var/our_temperature = air_contents.return_temperature()
+	var/energy_factor = round(log(10, max(our_pressure - pressure_limit, 1)) + log(10, max(our_temperature - temp_limit, 1)))
+	var/energy_consumed = energy_factor * 250 * seconds_per_tick
 
-	if(shielding_powered)
-		var/energy_factor = round(log(10, max(our_pressure - pressure_limit, 1)) + log(10, max(our_temperature - temp_limit, 1)))
-		var/energy_consumed = energy_factor * 250 * seconds_per_tick
-		if(powered(AREA_USAGE_EQUIP, ignore_use_power = TRUE))
-			use_energy(energy_consumed, channel = AREA_USAGE_EQUIP)
-		else if(!internal_cell?.use(energy_consumed * 0.025))
-			shielding_powered = FALSE
-			SSair.start_processing_machine(src)
-			investigate_log("shielding turned off due to power loss")
+	if(!energy_consumed)
+		return
+
+	if(powered(AREA_USAGE_EQUIP, ignore_use_power = TRUE))
+		use_energy(energy_consumed, channel = AREA_USAGE_EQUIP)
+	else if(!internal_cell?.use(energy_consumed * 0.025))
+		shielding_powered = FALSE
+		SSair.start_processing_machine(src)
+		investigate_log("shielding turned off due to power loss")
+		update_appearance()
 
 ///return the icon_state component for the canister's indicator light based on its current pressure reading
 /obj/machinery/portable_atmospherics/canister/proc/get_pressure_state()
@@ -577,7 +610,7 @@
 		"cellCharge" = internal_cell ? internal_cell.percent() : 0
 	)
 
-/obj/machinery/portable_atmospherics/canister/ui_act(action, params)
+/obj/machinery/portable_atmospherics/canister/ui_act(action, list/params, datum/tgui/ui, datum/ui_state/state)
 	. = ..()
 	if(.)
 		return
@@ -610,14 +643,14 @@
 				pressure = CAN_MAX_RELEASE_PRESSURE
 				. = TRUE
 			else if(pressure == "input")
-				pressure = tgui_input_number(usr, "New release pressure", "Canister Pressure", release_pressure, CAN_MAX_RELEASE_PRESSURE, CAN_MIN_RELEASE_PRESSURE)
+				pressure = tgui_input_number(usr, message = "New release pressure", title = "Canister Pressure", default = release_pressure, max_value = CAN_MAX_RELEASE_PRESSURE, min_value = CAN_MIN_RELEASE_PRESSURE, round_value = FALSE)
 				if(!isnull(pressure))
 					. = TRUE
 			else if(text2num(pressure) != null)
 				pressure = text2num(pressure)
 				. = TRUE
 			if(.)
-				release_pressure = clamp(round(pressure), CAN_MIN_RELEASE_PRESSURE, CAN_MAX_RELEASE_PRESSURE)
+				release_pressure = clamp(pressure, CAN_MIN_RELEASE_PRESSURE, CAN_MAX_RELEASE_PRESSURE)
 				investigate_log("was set to [release_pressure] kPa by [key_name(usr)].", INVESTIGATE_ATMOS)
 
 		if("valve")
@@ -643,7 +676,7 @@
 
 			var/datum/greyscale_modify_menu/menu = new(
 				src, usr, list("[initial_config]"), CALLBACK(src, PROC_REF(recolor)),
-				starting_icon_state = initial(icon_state),
+				starting_icon_state = initial(post_init_icon_state) || initial(icon_state),
 				starting_config = initial_config,
 				starting_colors = initial(greyscale_colors)
 			)
@@ -670,9 +703,9 @@
 
 	// Go over the gases in canister, pull all their info and mark the spooky ones
 	var/list/output = list()
-	output += "[key_name(user)] <b>opened</b> a canister [wire_pulsed ? "via wire pulse" : ""] that contains the following:"
+	output += "[key_name(user)] <b>opened</b> a canister[wire_pulsed ? " via wire pulse" : ""] that contains the following:"
 	var/list/admin_output = list()
-	admin_output += "[ADMIN_LOOKUPFLW(user)] <b>opened</b> a canister [wire_pulsed ? "via wire pulse" : ""] that contains the following at [ADMIN_VERBOSEJMP(src)]:"
+	admin_output += "[ADMIN_LOOKUPFLW(user)] <b>opened</b> a canister[wire_pulsed ? " via wire pulse" : ""] that contains the following at [ADMIN_VERBOSEJMP(src)]:"
 	var/list/gases = air_contents.gases
 	var/danger = FALSE
 	for(var/gas_index in 1 to length(gases))
@@ -701,7 +734,7 @@
 	shielding_powered = !shielding_powered
 	SSair.start_processing_machine(src)
 	message_admins("[ADMIN_LOOKUPFLW(user)] turned [shielding_powered ? "on" : "off"] [wire_pulsed ? "via wire pulse" : ""] the [src] powered shielding.")
-	user.investigate_log("turned [shielding_powered ? "on" : "off"] [wire_pulsed ? "via wire pulse" : ""] the [src] powered shielding.")
+	user.investigate_log("turned [shielding_powered ? "on" : "off"] [wire_pulsed ? "via wire pulse" : ""] the [src] powered shielding.", INVESTIGATE_ATMOS)
 	update_appearance()
 
 /// Ejects tank from canister, if any
@@ -709,8 +742,8 @@
 	if(!holding)
 		return FALSE
 	if(valve_open)
-		message_admins("[ADMIN_LOOKUPFLW(user)] removed [holding] from [src] with valve still open [wire_pulsed ? "via wire pulse" : ""] at [ADMIN_VERBOSEJMP(src)] releasing contents into the [span_boldannounce("air")].")
-		user.investigate_log("removed the [holding] [wire_pulsed ? "via wire pulse" : ""], leaving the valve open and transferring into the [span_boldannounce("air")].", INVESTIGATE_ATMOS)
+		message_admins("[ADMIN_LOOKUPFLW(user)] removed [holding] from [src] with valve still open [wire_pulsed ? "via wire pulse" : ""] at [ADMIN_VERBOSEJMP(src)] releasing contents into the [span_bolddanger("air")].")
+		user.investigate_log("removed the [holding] [wire_pulsed ? "via wire pulse" : ""], leaving the valve open and transferring into the [span_bolddanger("air")].", INVESTIGATE_ATMOS)
 	replace_tank(user, FALSE)
 	return TRUE
 
@@ -723,7 +756,7 @@
 	suppress_reactions = !suppress_reactions
 	SSair.start_processing_machine(src)
 	message_admins("[ADMIN_LOOKUPFLW(user)] turned [suppress_reactions ? "on" : "off"] [wire_pulsed ? "via wire pulse" : ""] the [src] reaction suppression.")
-	user.investigate_log("turned [suppress_reactions ? "on" : "off"] [wire_pulsed ? "via wire pulse" : ""] the [src] reaction suppression.")
+	user.investigate_log("turned [suppress_reactions ? "on" : "off"] [wire_pulsed ? "via wire pulse" : ""] the [src] reaction suppression.", INVESTIGATE_ATMOS)
 
 /obj/machinery/portable_atmospherics/canister/proc/recolor(datum/greyscale_modify_menu/menu)
 	set_greyscale(menu.split_colors, menu.config.type)

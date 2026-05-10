@@ -3,7 +3,9 @@
 	desc = "Used for scanning and monitoring health."
 	icon_state = "health"
 	custom_materials = list(/datum/material/iron=SMALL_MATERIAL_AMOUNT*8, /datum/material/glass=SMALL_MATERIAL_AMOUNT * 2)
-	attachable = TRUE
+	assembly_behavior = ASSEMBLY_TOGGLEABLE_INPUT
+	maptext_width = 64
+	maptext_y = 24
 
 	var/scanning = FALSE
 	var/health_scan
@@ -15,10 +17,12 @@
 
 /obj/item/assembly/health/Moved(atom/old_loc, movement_dir, forced, list/old_locs, momentum_change)
 	. = ..()
-	if(iscarbon(old_loc))
-		UnregisterSignal(old_loc, COMSIG_MOB_GET_STATUS_TAB_ITEMS)
-	if(iscarbon(loc))
-		RegisterSignal(loc, COMSIG_MOB_GET_STATUS_TAB_ITEMS, PROC_REF(get_status_tab_item))
+	if(isliving(old_loc))
+		UnregisterSignal(old_loc, COMSIG_LIVING_HEALTH_UPDATE)
+		maptext = null
+	if(isliving(loc))
+		RegisterSignal(loc, COMSIG_LIVING_HEALTH_UPDATE, PROC_REF(on_health_changed))
+		on_health_changed(loc)
 
 /obj/item/assembly/health/activate()
 	if(!..())
@@ -58,8 +62,8 @@
 
 	//do the pulse & the scan
 	pulse()
-	audible_message("<span class='infoplain'>[icon2html(src, hearers(src))] *beep* *beep* *beep*</span>")
-	playsound(src, 'sound/machines/triple_beep.ogg', ASSEMBLY_BEEP_VOLUME, TRUE)
+	audible_message(span_infoplain("[icon2html(src, hearers(src))] *beep* *beep* *beep*"))
+	playsound(src, 'sound/machines/beep/triple_beep.ogg', ASSEMBLY_BEEP_VOLUME, TRUE)
 	toggle_scan()
 
 /obj/item/assembly/health/proc/toggle_scan()
@@ -79,10 +83,9 @@
 		health_target = HEALTH_THRESHOLD_CRIT
 	return
 
-/obj/item/assembly/health/proc/get_status_tab_item(mob/living/carbon/source, list/items)
+/obj/item/assembly/health/proc/on_health_changed(mob/living/source)
 	SIGNAL_HANDLER
-	items += "Health: [round((source.health / source.maxHealth) * 100)]%"
-
+	maptext = MAPTEXT("HP: [round((source.health / source.maxHealth) * 100)]%")
 
 /obj/item/assembly/health/ui_status(mob/user, datum/ui_state/state)
 	return is_secured(user) ? ..() : UI_CLOSE
@@ -100,7 +103,7 @@
 	data["target"] = health_target
 	return data
 
-/obj/item/assembly/health/ui_act(action, params)
+/obj/item/assembly/health/ui_act(action, list/params, datum/tgui/ui, datum/ui_state/state)
 	. = ..()
 	if(.)
 		return .

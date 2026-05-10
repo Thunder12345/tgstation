@@ -31,12 +31,6 @@
 /obj/machinery/atmospherics/pipe/smart/manifold4w/scrubbers/hidden/layer2,
 /turf/open/floor/wood,
 /area/ruin/comms_agent)
-"ce" = (
-/obj/machinery/modular_computer/preset{
-	dir = 1
-	},
-/turf/open/floor/wood/tile,
-/area/ruin/comms_agent)
 "cI" = (
 /obj/structure/water_source/puddle,
 /obj/item/reagent_containers/cup/glass/waterbottle/large/empty{
@@ -163,12 +157,7 @@
 /turf/open/misc/asteroid/snow/standard_air,
 /area/ruin/comms_agent)
 "kp" = (
-/obj/effect/decal/cleanable/dirt,
-/obj/structure/cable,
-/obj/machinery/atmospherics/components/unary/vent_pump/on/layer4{
-	dir = 8
-	},
-/turf/open/floor/wood/tile,
+/turf/open/space/basic,
 /area/ruin/comms_agent)
 "kA" = (
 /obj/effect/turf_decal/siding/wood,
@@ -274,17 +263,6 @@
 	},
 /turf/open/misc/asteroid/snow/icemoon,
 /area/icemoon/underground/explored)
-"pl" = (
-/obj/effect/mapping_helpers/airlock/access/all/syndicate/general,
-/obj/machinery/door/airlock/centcom{
-	name = "Syndicate Secure Airlock System";
-	desc = "Truly, a marvel of modern engineering."
-	},
-/obj/structure/cable,
-/obj/machinery/atmospherics/pipe/smart/manifold4w/supply/hidden/layer4,
-/obj/machinery/atmospherics/pipe/smart/manifold4w/scrubbers/hidden/layer2,
-/turf/open/floor/wood/tile,
-/area/ruin/comms_agent)
 "pV" = (
 /obj/machinery/light/small/directional/south,
 /obj/machinery/atmospherics/components/unary/vent_pump/on/layer4{
@@ -297,28 +275,14 @@
 /obj/structure/closet/crate,
 /obj/item/flashlight,
 /obj/item/tank/internals/emergency_oxygen,
+/obj/item/tank/internals/emergency_oxygen,
 /turf/open/floor/wood/parquet,
-/area/ruin/comms_agent)
-"rh" = (
-/obj/structure/chair/office/tactical{
-	dir = 8
-	},
-/obj/structure/cable,
-/obj/machinery/atmospherics/pipe/smart/manifold4w/supply/hidden/layer4,
-/obj/machinery/atmospherics/pipe/smart/manifold4w/scrubbers/hidden/layer2,
-/turf/open/floor/wood/tile,
 /area/ruin/comms_agent)
 "rA" = (
 /obj/machinery/atmospherics/components/tank/air,
 /obj/machinery/light/dim/directional/north,
 /turf/open/floor/plating,
 /area/ruin/comms_agent/maint)
-"rW" = (
-/obj/structure/filingcabinet,
-/obj/item/paperwork,
-/obj/item/paper/monitorkey,
-/turf/open/floor/wood/tile,
-/area/ruin/comms_agent)
 "sc" = (
 /obj/effect/decal/cleanable/blood/splatter/over_window{
 	pixel_y = 32
@@ -330,13 +294,6 @@
 /obj/structure/flora/rock/pile/icy/style_random,
 /turf/open/misc/asteroid/snow/icemoon,
 /area/icemoon/underground/explored)
-"sJ" = (
-/obj/structure/sign/poster/contraband/random/directional/west,
-/obj/machinery/computer/camera_advanced/syndie{
-	dir = 4
-	},
-/turf/open/floor/wood/tile,
-/area/ruin/comms_agent)
 "tb" = (
 /obj/machinery/power/port_gen/pacman,
 /obj/structure/cable,
@@ -369,9 +326,7 @@
 /obj/machinery/atmospherics/components/unary/vent_pump/on/layer4{
 	dir = 1
 	},
-/turf/open/floor/plating/snowed{
-	initial_gas_mix = "o2=22;n2=82;TEMP=293.15"
-	},
+/turf/open/floor/plating/snowed/standard_air,
 /area/ruin/comms_agent)
 "uk" = (
 /obj/structure/cable,
@@ -396,15 +351,6 @@
 /obj/effect/mapping_helpers/broken_floor,
 /obj/structure/cable,
 /obj/machinery/atmospherics/pipe/smart/manifold4w/supply/hidden/layer4,
-/turf/open/floor/wood/tile,
-/area/ruin/comms_agent)
-"vB" = (
-/obj/effect/decal/cleanable/dirt,
-/obj/structure/table/reinforced,
-/obj/item/paper/fluff/ruins/listeningstation/briefing{
-	pixel_x = -2
-	},
-/obj/item/pen/survival,
 /turf/open/floor/wood/tile,
 /area/ruin/comms_agent)
 "vK" = (
@@ -442,21 +388,6 @@
 /obj/machinery/hydroponics/soil,
 /turf/open/misc/asteroid/snow/standard_air,
 /area/ruin/comms_agent)
-"xq" = (
-/obj/effect/decal/cleanable/dirt,
-/obj/item/radio/intercom{
-	pixel_x = 31
-	},
-/obj/structure/table/reinforced,
-/obj/machinery/fax{
-	syndicate_network = 1;
-	allow_exotic_faxes = 1;
-	fax_name = "Listening Post";
-	desc = "Bluespace technologies on the application of bureaucracy. This one is send-only";
-	pixel_y = 5
-	},
-/turf/open/floor/wood/tile,
-/area/ruin/comms_agent)
 "xs" = (
 /obj/effect/decal/cleanable/dirt/dust,
 /obj/structure/table,
@@ -483,12 +414,6 @@
 	},
 /obj/structure/fans/tiny,
 /turf/open/floor/iron,
-/area/ruin/comms_agent)
-"yG" = (
-/obj/machinery/computer/message_monitor{
-	dir = 4
-	},
-/turf/open/floor/wood/tile,
 /area/ruin/comms_agent)
 "yR" = (
 /obj/structure/table,
@@ -520,19 +445,16 @@
 	},
 /turf/open/floor/wood,
 /area/ruin/comms_agent)
+"Bx" = (
+/obj/effect/baseturf_helper/asteroid/snow,
+/turf/closed/wall,
+/area/ruin/comms_agent)
 "BD" = (
 /obj/effect/turf_decal/siding/wood/corner{
 	dir = 8
 	},
 /turf/open/misc/asteroid/snow/icemoon,
 /area/icemoon/underground/explored)
-"BQ" = (
-/obj/effect/decal/cleanable/dirt,
-/obj/structure/cable,
-/obj/machinery/atmospherics/pipe/smart/manifold4w/supply/hidden/layer4,
-/obj/structure/chair/office/tactical,
-/turf/open/floor/wood/tile,
-/area/ruin/comms_agent)
 "BZ" = (
 /obj/effect/decal/cleanable/dirt/dust,
 /obj/machinery/light/directional/north,
@@ -541,13 +463,19 @@
 /obj/item/reagent_containers/condiment/rice,
 /obj/item/reagent_containers/condiment/milk,
 /obj/item/reagent_containers/condiment/flour,
+/obj/item/reagent_containers/condiment/sugar,
 /obj/structure/closet/secure_closet/freezer/empty,
+/obj/item/knife/kitchen,
+/obj/item/storage/box/donkpockets,
+/obj/item/coffee_cartridge,
+/obj/item/coffee_cartridge/decaf,
+/obj/item/coffee_cartridge/fancy,
 /turf/open/floor/iron/white,
 /area/ruin/comms_agent)
 "CL" = (
 /obj/structure/cable,
 /obj/machinery/atmospherics/pipe/smart/manifold4w/yellow/visible/layer2,
-/obj/structure/closet/emcloset,
+/obj/machinery/power/smes/super/full,
 /turf/open/floor/plating,
 /area/ruin/comms_agent/maint)
 "CS" = (
@@ -563,12 +491,14 @@
 /area/ruin/comms_agent/maint)
 "CW" = (
 /obj/machinery/atmospherics/pipe/smart/manifold4w/scrubbers/hidden/layer2,
+/obj/structure/closet/emcloset,
 /turf/open/floor/plating,
 /area/ruin/comms_agent/maint)
 "DH" = (
 /obj/structure/closet/crate/freezer,
 /obj/item/food/grown/potato,
 /obj/item/food/grown/potato,
+/obj/item/food/grown/carrot,
 /obj/item/food/grown/onion,
 /obj/item/food/grown/garlic,
 /turf/open/floor/iron/white,
@@ -680,6 +610,7 @@
 	pixel_x = -13;
 	pixel_y = 4
 	},
+/obj/item/storage/box/coffeepack,
 /turf/open/floor/wood,
 /area/ruin/comms_agent)
 "JD" = (
@@ -694,6 +625,7 @@
 /obj/item/toy/plush/nukeplushie,
 /obj/item/ammo_box/magazine/m9mm,
 /obj/item/ammo_box/magazine/m9mm,
+/obj/item/clothing/head/costume/ushanka,
 /turf/open/floor/wood/tile,
 /area/ruin/comms_agent)
 "JY" = (
@@ -706,11 +638,11 @@
 /obj/machinery/atmospherics/components/trinary/filter/layer2{
 	dir = 8
 	},
+/obj/structure/cable,
 /obj/machinery/power/terminal{
 	dir = 4
 	},
-/obj/structure/cable,
-/obj/machinery/power/smes/super/full,
+/obj/machinery/portable_atmospherics/canister/oxygen,
 /turf/open/floor/plating,
 /area/ruin/comms_agent/maint)
 "KB" = (
@@ -728,14 +660,16 @@
 "KQ" = (
 /turf/open/genturf,
 /area/template_noop)
+"KR" = (
+/obj/effect/baseturf_helper/asteroid/snow,
+/turf/closed/wall,
+/area/ruin/comms_agent/maint)
 "Lh" = (
 /obj/effect/decal/cleanable/dirt,
 /obj/structure/cable,
 /obj/item/cultivator/rake,
 /obj/machinery/atmospherics/pipe/smart/manifold4w/supply/hidden/layer4,
-/turf/open/floor/plating/snowed{
-	initial_gas_mix = "o2=22;n2=82;TEMP=293.15"
-	},
+/turf/open/floor/plating/snowed/standard_air,
 /area/ruin/comms_agent)
 "Ll" = (
 /obj/effect/mapping_helpers/broken_floor,
@@ -769,7 +703,7 @@
 /area/ruin/comms_agent)
 "Lz" = (
 /turf/open/floor/wood{
-	initial_gas_mix = "o2=22;n2=82;TEMP=180";
+	initial_gas_mix = "ICEMOON_ATMOS";
 	name = "bridge"
 	},
 /area/icemoon/underground/explored)
@@ -839,9 +773,7 @@
 /obj/machinery/atmospherics/components/unary/vent_scrubber/on/layer2{
 	dir = 8
 	},
-/turf/open/floor/plating/snowed{
-	initial_gas_mix = "o2=22;n2=82;TEMP=293.15"
-	},
+/turf/open/floor/plating/snowed/standard_air,
 /area/ruin/comms_agent)
 "NJ" = (
 /obj/item/storage/medkit/regular,
@@ -864,9 +796,7 @@
 /obj/structure/cable,
 /obj/machinery/atmospherics/pipe/smart/manifold4w/supply/hidden/layer4,
 /obj/machinery/atmospherics/pipe/smart/manifold4w/scrubbers/hidden/layer2,
-/turf/open/floor/plating/snowed{
-	initial_gas_mix = "o2=22;n2=82;TEMP=293.15"
-	},
+/turf/open/floor/plating/snowed/standard_air,
 /area/ruin/comms_agent)
 "OB" = (
 /turf/open/lava/plasma/ice_moon,
@@ -895,9 +825,6 @@
 "Qn" = (
 /obj/machinery/power/apc/auto_name/directional/east,
 /obj/effect/mapping_helpers/apc/syndicate_access,
-/obj/machinery/power/terminal{
-	dir = 4
-	},
 /obj/structure/cable,
 /turf/open/floor/wood,
 /area/ruin/comms_agent)
@@ -941,17 +868,6 @@
 /obj/machinery/atmospherics/pipe/smart/manifold4w/scrubbers/hidden/layer2,
 /turf/open/floor/plating,
 /area/ruin/comms_agent)
-"Tn" = (
-/obj/structure/table/reinforced,
-/obj/item/paper_bin/carbon{
-	pixel_x = -2;
-	pixel_y = 5
-	},
-/obj/machinery/newscaster/directional/south,
-/obj/item/pen/edagger,
-/obj/machinery/light/small/directional/south,
-/turf/open/floor/wood/tile,
-/area/ruin/comms_agent)
 "Tp" = (
 /obj/effect/mapping_helpers/broken_floor,
 /obj/structure/cable,
@@ -977,17 +893,6 @@
 /obj/machinery/atmospherics/pipe/smart/manifold4w/supply/hidden/layer4,
 /obj/machinery/atmospherics/pipe/smart/manifold4w/scrubbers/hidden/layer2,
 /turf/open/floor/carpet,
-/area/ruin/comms_agent)
-"UI" = (
-/obj/structure/table/reinforced,
-/obj/machinery/computer/records/security/laptop/syndie{
-	dir = 1
-	},
-/obj/item/paper/monitorkey{
-	pixel_x = -15;
-	pixel_y = 7
-	},
-/turf/open/floor/wood/tile,
 /area/ruin/comms_agent)
 "Vo" = (
 /obj/machinery/atmospherics/components/unary/vent_pump/on/layer4{
@@ -1019,15 +924,6 @@
 "WR" = (
 /turf/closed/wall,
 /area/ruin/comms_agent)
-"WU" = (
-/obj/structure/sign/warning/explosives/alt/directional/north,
-/obj/machinery/syndicatebomb/self_destruct{
-	anchored = 1
-	},
-/obj/machinery/light/small/red/directional/north,
-/obj/machinery/door/window/brigdoor/left/directional/south,
-/turf/open/floor/circuit/red,
-/area/ruin/comms_agent)
 "Xk" = (
 /obj/effect/mapping_helpers/airlock/access/any/syndicate,
 /obj/machinery/door/airlock/glass,
@@ -1037,17 +933,11 @@
 /turf/open/floor/plating,
 /area/ruin/comms_agent)
 "XU" = (
-/obj/effect/spawner/structure/window/reinforced,
-/turf/open/floor/plating,
-/area/ruin/comms_agent)
-"Yz" = (
-/obj/effect/decal/cleanable/dirt,
-/obj/structure/cable,
-/obj/machinery/atmospherics/pipe/smart/manifold4w/supply/hidden/layer4,
-/obj/machinery/atmospherics/components/unary/vent_scrubber/on/layer2{
-	dir = 8
+/obj/modular_map_root/syndicatebase{
+	key = "commsoffice";
+	config_file = "strings/modular_maps/syndicatebaseice.toml"
 	},
-/turf/open/floor/wood/tile,
+/turf/open/space/basic,
 /area/ruin/comms_agent)
 "YA" = (
 /turf/open/floor/wood/parquet,
@@ -2361,8 +2251,8 @@ xD
 ij
 hW
 Ac
-WR
-YI
+Bx
+KR
 YI
 YI
 LP
@@ -2418,11 +2308,11 @@ QT
 jB
 Sc
 Jh
-WR
-yG
-sJ
-Tn
-nP
+XU
+kp
+kp
+kp
+kp
 MH
 MH
 MH
@@ -2475,11 +2365,11 @@ kL
 Sc
 Tp
 Gq
-pl
-HX
-rh
-UI
-XU
+kp
+kp
+kp
+kp
+kp
 MH
 MH
 MH
@@ -2532,11 +2422,11 @@ FZ
 zi
 in
 bt
-WR
-xq
-Yz
-ce
-XU
+kp
+kp
+kp
+kp
+kp
 MH
 MH
 sB
@@ -2589,11 +2479,11 @@ Qn
 up
 in
 ag
-WR
-WR
-BQ
-vB
-XU
+kp
+kp
+kp
+kp
+kp
 MH
 MH
 OM
@@ -2646,11 +2536,11 @@ nP
 dP
 tu
 kL
-WR
-WU
 kp
-rW
-XU
+kp
+kp
+kp
+kp
 MH
 MH
 OM
@@ -2703,11 +2593,11 @@ nP
 nP
 nP
 Xk
-WR
-WR
-WR
-nP
-nP
+kp
+kp
+kp
+kp
+kp
 MH
 MH
 OM

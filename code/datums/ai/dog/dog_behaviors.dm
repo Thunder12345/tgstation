@@ -27,16 +27,8 @@
 		paw_harmlessly(living_pawn, target, seconds_per_tick)
 		return AI_BEHAVIOR_INSTANT
 
-	// Give Ian some teeth
-	var/old_melee_lower = living_pawn.melee_damage_lower
-	var/old_melee_upper = living_pawn.melee_damage_upper
-	living_pawn.melee_damage_lower = max(5, old_melee_lower)
-	living_pawn.melee_damage_upper = max(10, old_melee_upper)
-
 	. = ..() // Bite time
 
-	living_pawn.melee_damage_lower = old_melee_lower
-	living_pawn.melee_damage_upper = old_melee_upper
 	return AI_BEHAVIOR_DELAY
 
 /// Swat at someone we don't like but won't hurt
@@ -44,7 +36,7 @@
 	if(!SPT_PROB(20, seconds_per_tick))
 		return
 	living_pawn.do_attack_animation(target, ATTACK_EFFECT_DISARM)
-	playsound(target, 'sound/weapons/thudswoosh.ogg', 50, TRUE, -1)
+	playsound(target, 'sound/items/weapons/thudswoosh.ogg', 50, TRUE, -1)
 	target.visible_message(span_danger("[living_pawn] paws ineffectually at [target]!"), span_danger("[living_pawn] paws ineffectually at you!"))
 
 /// Let them know we mean business
@@ -54,4 +46,4 @@
 	living_pawn.manual_emote("[pick("barks", "growls", "stares")] menacingly at [target]!")
 	if(!SPT_PROB(40, seconds_per_tick))
 		return
-	playsound(living_pawn, pick('sound/creatures/dog/growl1.ogg', 'sound/creatures/dog/growl2.ogg'), 50, TRUE, -1)
+	playsound(living_pawn, SFX_GROWL, 50, TRUE, -1)
