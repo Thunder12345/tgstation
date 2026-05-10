@@ -49,6 +49,9 @@
 	registered = FALSE
 	return
 
+/obj/docking_port/proc/Check_id()
+	return
+
 //these objects are indestructible
 /obj/docking_port/Destroy(force)
 	// unless you assert that you know what you're doing. Horrible things
