@@ -113,10 +113,10 @@ GLOBAL_LIST_INIT(sm_gas_behavior, init_sm_gas())
 	)
 	if(!consumed_co2)
 		return
-	sm.absorbed_gasmix.gases[/datum/gas/carbon_dioxide][MOLES] -= consumed_co2
-	sm.absorbed_gasmix.gases[/datum/gas/oxygen][MOLES] -= consumed_co2
-	ASSERT_GAS(/datum/gas/pluoxium, sm.absorbed_gasmix)
-	sm.absorbed_gasmix.gases[/datum/gas/pluoxium][MOLES] += consumed_co2
+	sm.absorbed_gasmix.adjust_gas(/datum/gas/carbon_dioxide, -consumed_co2)
+	sm.absorbed_gasmix.adjust_gas(/datum/gas/oxygen, -consumed_co2)
+
+	sm.absorbed_gasmix.adjust_gas(/datum/gas/pluoxium, consumed_co2)
 
 /datum/sm_gas/plasma
 	gas_path = /datum/gas/plasma
@@ -178,7 +178,7 @@ GLOBAL_LIST_INIT(sm_gas_behavior, init_sm_gas())
 	var/consumed_miasma = sm.absorbed_gasmix.gases[/datum/gas/miasma][MOLES] * miasma_ratio
 	if(!consumed_miasma)
 		return
-	sm.absorbed_gasmix.gases[/datum/gas/miasma][MOLES] -= consumed_miasma
+	sm.absorbed_gasmix.adjust_gas(/datum/gas/miasma, -consumed_miasma)
 	sm.external_power_trickle += consumed_miasma * MIASMA_POWER_GAIN
 	sm.log_activation("miasma absorption")
 
@@ -216,9 +216,9 @@ GLOBAL_LIST_INIT(sm_gas_behavior, init_sm_gas())
 	desc = "Will generate electrical zaps."
 
 /datum/sm_gas/zauker/extra_effects(obj/machinery/power/supermatter_crystal/sm)
-	if(!prob(sm.gas_percentage[/datum/gas/zauker]))
+	if(!prob(sm.gas_percentage[/datum/gas/zauker] * 100))
 		return
-	playsound(sm.loc, 'sound/weapons/emitter2.ogg', 100, TRUE, extrarange = 10)
+	playsound(sm.loc, 'sound/items/weapons/emitter2.ogg', 100, TRUE, extrarange = 10)
 	sm.supermatter_zap(
 		sm,
 		range = 6,

@@ -12,7 +12,7 @@
 	exit_delay = 40
 	wreckage = /obj/structure/mecha_wreckage/reticence
 	accesses = list(ACCESS_MECH_SCIENCE, ACCESS_THEATRE)
-	mecha_flags = CAN_STRAFE | IS_ENCLOSED | HAS_LIGHTS | QUIET_STEPS | QUIET_TURNS | MMI_COMPATIBLE
+	mecha_flags = CAN_STRAFE | IS_ENCLOSED | HAS_LIGHTS | QUIET_STEPS | QUIET_TURNS | MMI_COMPATIBLE | AI_COMPATIBLE
 	mech_type = EXOSUIT_MODULE_RETICENCE
 	max_equip_by_category = list(
 		MECHA_L_ARM = 1,
@@ -42,7 +42,7 @@
 	)
 
 /obj/vehicle/sealed/mecha/reticence/loaded/populate_parts()
-	cell = new /obj/item/stock_parts/cell/bluespace(src)
+	cell = new /obj/item/stock_parts/power_store/cell/bluespace(src)
 	scanmod = new /obj/item/stock_parts/scanning_module/phasic(src)
 	capacitor = new /obj/item/stock_parts/capacitor/super(src)
 	servo = new /obj/item/stock_parts/servo/pico(src)

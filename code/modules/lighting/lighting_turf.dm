@@ -14,7 +14,7 @@
 	if (lighting_object)
 		qdel(lighting_object, force=TRUE) //Shitty fix for lighting objects persisting after death
 
-	new /datum/lighting_object(src)
+	new /atom/movable/lighting_object(null, src)
 
 // Used to get a scaled lumcount.
 /turf/proc/get_lumcount(minlum = 0, maxlum = 1)
@@ -88,6 +88,9 @@
 			else //If fulltile and opaque, then the whole tile blocks view, no need to continue checking.
 				directional_opacity = ALL_CARDINALS
 				break
+	else
+		for(var/atom/movable/content as anything in contents)
+			SEND_SIGNAL(content, COMSIG_TURF_NO_LONGER_BLOCK_LIGHT)
 	if(. != directional_opacity && (. == ALL_CARDINALS || directional_opacity == ALL_CARDINALS))
 		reconsider_lights() //The lighting system only cares whether the tile is fully concealed from all directions or not.
 
